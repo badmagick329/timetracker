@@ -8,12 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Category } from '@/lib/types';
+import { DisplayedCategory } from '@/lib/types';
 
 export default function CategoryPicker({
   categories,
+  onValueChange,
+  activityInProgress,
 }: {
-  categories: Category[];
+  categories: DisplayedCategory[];
+  onValueChange: (option: DisplayedCategory | undefined) => void;
+  activityInProgress: boolean;
 }) {
   if (categories.length === 0) {
     categories = [{ value: 'other', label: 'Other' }];
@@ -27,8 +31,11 @@ export default function CategoryPicker({
   };
 
   return (
-    <Select>
-      <SelectTrigger className='w-[250px] bg-muted-foreground/20'>
+    <Select onValueChange={onValueChange}>
+      <SelectTrigger
+        className='w-[250px] bg-muted-foreground/20'
+        disabled={activityInProgress}
+      >
         <SelectValue
           className='text-foreground text-sm native:text-lg'
           placeholder='Select a category'

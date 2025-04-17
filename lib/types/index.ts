@@ -1,4 +1,4 @@
-export type Category = {
+export type DisplayedCategory = {
   value: string;
   label: string;
 };
