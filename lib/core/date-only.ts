@@ -16,4 +16,12 @@ export class DateOnly {
   get year(): number {
     return this._value.getUTCFullYear();
   }
+
+  public equals(other: DateOnly) {
+    return (
+      this.year === other.year &&
+      this.month === other.month &&
+      this.day === other.day
+    );
+  }
 }
