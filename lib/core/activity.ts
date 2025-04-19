@@ -23,4 +23,8 @@ export class Activity {
   get logicalDate() {
     return this.timespan.logicalDate;
   }
+
+  toString(): string {
+    return `Activity: ${this.summary}, Category: ${this.category}, Duration: ${this.duration}`;
+  }
 }

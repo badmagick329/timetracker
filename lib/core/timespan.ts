@@ -1,19 +1,18 @@
 import { DateOnly } from './date-only';
-import { Datetime } from './datetime';
 
 export class Timespan {
-  private start: Datetime;
-  private end: Datetime;
+  private start: Date;
+  private end: Date;
   private _logicalDate: DateOnly;
 
-  private constructor(start: Datetime, end: Datetime, logicalDate: DateOnly) {
+  private constructor(start: Date, end: Date, logicalDate: DateOnly) {
     this.start = start;
     this.end = end;
     this._logicalDate = logicalDate;
   }
 
-  public static create(start: Datetime, end: Datetime, logicalDate: DateOnly) {
-    if (start.value >= end.value) {
+  public static create(start: Date, end: Date, logicalDate: DateOnly) {
+    if (start >= end) {
       throw new Error('Start date must be before end date');
     }
 
@@ -24,7 +23,7 @@ export class Timespan {
    * Returns the duration of the timespan in milliseconds.
    */
   get duration(): number {
-    return this.end.value.getTime() - this.start.value.getTime();
+    return this.end.getTime() - this.start.getTime();
   }
 
   get logicalDate(): DateOnly {

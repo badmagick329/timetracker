@@ -1,15 +1,11 @@
 import { DateOnly } from '../date-only';
-import { Datetime } from '../datetime';
 import { Timespan } from '../timespan';
 
 describe('Timespan', () => {
   it('should create a timespan with valid start and end times', () => {
-    const startDate = new Date('2025-04-17T10:00:00Z');
-    const endDate = new Date('2025-04-17T12:00:00Z');
+    const start = new Date('2025-04-17T10:00:00Z');
+    const end = new Date('2025-04-17T12:00:00Z');
     const logicalDate = new DateOnly(new Date('2025-04-17'));
-
-    const start = new Datetime(startDate);
-    const end = new Datetime(endDate);
 
     const timespan = Timespan.create(start, end, logicalDate);
 
@@ -18,12 +14,9 @@ describe('Timespan', () => {
   });
 
   it('should calculate the correct duration in milliseconds', () => {
-    const startDate = new Date('2025-04-17T10:00:00Z');
-    const endDate = new Date('2025-04-17T12:00:00Z');
+    const start = new Date('2025-04-17T10:00:00Z');
+    const end = new Date('2025-04-17T12:00:00Z');
     const logicalDate = new DateOnly(new Date('2025-04-17'));
-
-    const start = new Datetime(startDate);
-    const end = new Datetime(endDate);
 
     const timespan = Timespan.create(start, end, logicalDate);
 
@@ -31,12 +24,9 @@ describe('Timespan', () => {
   });
 
   it('should throw an error if start time is after end time', () => {
-    const startDate = new Date('2025-04-17T14:00:00Z');
-    const endDate = new Date('2025-04-17T12:00:00Z');
+    const start = new Date('2025-04-17T14:00:00Z');
+    const end = new Date('2025-04-17T12:00:00Z');
     const logicalDate = new DateOnly(new Date('2025-04-17'));
-
-    const start = new Datetime(startDate);
-    const end = new Datetime(endDate);
 
     expect(() => {
       Timespan.create(start, end, logicalDate);
@@ -47,11 +37,8 @@ describe('Timespan', () => {
     const sameDate = new Date('2025-04-17T12:00:00Z');
     const logicalDate = new DateOnly(new Date('2025-04-17'));
 
-    const start = new Datetime(sameDate);
-    const end = new Datetime(sameDate);
-
     expect(() => {
-      Timespan.create(start, end, logicalDate);
+      Timespan.create(sameDate, sameDate, logicalDate);
     }).toThrow('Start date must be before end date');
   });
 });

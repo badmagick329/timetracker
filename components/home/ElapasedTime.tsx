@@ -1,8 +1,9 @@
 import { DisplayedCategory } from '@/lib/types';
-import { Text } from '../ui/text';
+import { Text } from '@/components/ui/text';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Button } from '../ui/button';
+import { Button } from '@/components/ui/button';
+import { useStore } from '@/store/useStore';
 
 export default function ElapsedTime({
   category,
@@ -11,32 +12,15 @@ export default function ElapsedTime({
   category: DisplayedCategory | undefined;
   activityInProgress: boolean;
 }) {
-  const [startTime, setStartTime] = useState<Date | undefined>(undefined);
-  const [endTime, setEndTime] = useState<Date | undefined>(undefined);
   const [duration, setDuration] = useState(0); // in milliseconds
-
-  useEffect(() => {
-    if (activityInProgress) {
-      console.log('Setting start time');
-      setStartTime(new Date());
-      setEndTime(undefined);
-    } else {
-      if (!startTime) {
-        console.log('Start time not set');
-        return;
-      }
-      const now = new Date();
-      setEndTime(now);
-      setDuration(now.getTime() - startTime.getTime());
-    }
-  }, [activityInProgress]);
+  const { timerState } = useStore();
+  const { startTime, endTime, setStartTime, setEndTime } = timerState;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
     if (activityInProgress && startTime && !endTime) {
       interval = setInterval(() => {
-        console.log('Updating duration');
         setDuration(new Date().getTime() - startTime.getTime());
       }, 100);
     }

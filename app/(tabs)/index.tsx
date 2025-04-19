@@ -6,6 +6,7 @@ import CategoryPicker from '@/components/home/CategoryPicker';
 import { DisplayedCategory } from '@/lib/types';
 import { useState } from 'react';
 import ElapsedTime from '@/components/home/ElapasedTime';
+import { useStore } from '@/store/useStore';
 
 const testCategories = [
   {
@@ -27,6 +28,8 @@ export default function Index() {
     DisplayedCategory | undefined
   >(undefined);
   const [activityInProgress, setActivityInProgress] = useState(false);
+  const { createActivity, getActivities, timerState } = useStore();
+  const { startTime, endTime, setStartTime, setEndTime } = timerState;
 
   return (
     <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
@@ -43,8 +46,9 @@ export default function Index() {
           variant={'accent'}
           disabled={!selectedCategory}
           onPress={() => {
-            console.log('Starting');
+            console.log(`Starting ${selectedCategory?.value}`);
             setActivityInProgress(true);
+            setStartTime(new Date());
           }}
         >
           <Text>Start</Text>
@@ -55,8 +59,23 @@ export default function Index() {
           variant={'destructive'}
           disabled={!selectedCategory || !activityInProgress}
           onPress={() => {
-            console.log('Ending');
+            console.log(`Ending ${selectedCategory?.value}`);
+            const newEndTime = new Date();
+            setEndTime(newEndTime);
             setActivityInProgress(false);
+            console.log(
+              `${startTime} ${newEndTime} ${selectedCategory?.value}`
+            );
+            if (!(startTime && newEndTime && selectedCategory)) {
+              return;
+            }
+            createActivity({
+              startTime: startTime,
+              endTime: newEndTime,
+              category: selectedCategory.value,
+            });
+
+            console.log(`Number of activities: ${getActivities({}).length}`);
           }}
         >
           <Text>End</Text>
