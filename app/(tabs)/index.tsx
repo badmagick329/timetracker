@@ -29,7 +29,31 @@ export default function Index() {
   >(undefined);
   const [activityInProgress, setActivityInProgress] = useState(false);
   const { createActivity, getActivities, timerState } = useStore();
-  const { startTime, endTime, setStartTime, setEndTime } = timerState;
+  const { startTime, setStartTime, setEndTime } = timerState;
+
+  const handleStart = () => {
+    console.log(`Starting ${selectedCategory?.value}`);
+    setActivityInProgress(true);
+    setStartTime(new Date());
+  };
+
+  const handleEnd = async () => {
+    console.log(`Ending ${selectedCategory?.value}`);
+    const newEndTime = new Date();
+    setEndTime(newEndTime);
+    setActivityInProgress(false);
+    console.log(`${startTime} ${newEndTime} ${selectedCategory?.value}`);
+    if (!(startTime && newEndTime && selectedCategory)) {
+      return;
+    }
+    await createActivity({
+      startTime: startTime,
+      endTime: newEndTime,
+      category: selectedCategory.value,
+    });
+
+    console.log(`Number of activities: ${(await getActivities())?.length}`);
+  };
 
   return (
     <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
@@ -45,11 +69,7 @@ export default function Index() {
           size={'lg'}
           variant={'accent'}
           disabled={!selectedCategory}
-          onPress={() => {
-            console.log(`Starting ${selectedCategory?.value}`);
-            setActivityInProgress(true);
-            setStartTime(new Date());
-          }}
+          onPress={handleStart}
         >
           <Text>Start</Text>
         </Button>
@@ -58,25 +78,7 @@ export default function Index() {
           size={'lg'}
           variant={'destructive'}
           disabled={!selectedCategory || !activityInProgress}
-          onPress={() => {
-            console.log(`Ending ${selectedCategory?.value}`);
-            const newEndTime = new Date();
-            setEndTime(newEndTime);
-            setActivityInProgress(false);
-            console.log(
-              `${startTime} ${newEndTime} ${selectedCategory?.value}`
-            );
-            if (!(startTime && newEndTime && selectedCategory)) {
-              return;
-            }
-            createActivity({
-              startTime: startTime,
-              endTime: newEndTime,
-              category: selectedCategory.value,
-            });
-
-            console.log(`Number of activities: ${getActivities({}).length}`);
-          }}
+          onPress={handleEnd}
         >
           <Text>End</Text>
         </Button>

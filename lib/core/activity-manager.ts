@@ -1,29 +1,33 @@
 import { Activity } from './activity';
 import { Category } from './category';
 import { DateOnly } from './date-only';
+import { IActivitiesStorage } from './iactivities-storage';
 
 export class ActivityManager {
-  private activities: Activity[] = [];
+  private storage: IActivitiesStorage;
 
-  public addActivity(activity: Activity): void {
-    this.activities.push(activity);
+  constructor(storage: IActivitiesStorage) {
+    this.storage = storage;
+  }
+
+  public async addActivity(activity: Activity): Promise<void> {
+    await this.storage.addActivity(activity);
     console.log('Activity added:', activity);
   }
 
-  public removeActivity(activity: Activity): boolean {
-    const index = this.activities.indexOf(activity);
-    if (index !== -1) {
-      this.activities.splice(index, 1);
-      return true;
-    }
-    return false;
+  public async removeActivity(activity: Activity): Promise<boolean> {
+    return await this.storage.removeActivity(activity.toString());
   }
 
-  public getActivities(filters: {
+  public getActivities(filters?: {
     date?: DateOnly;
     category?: Category;
   }): Activity[] {
-    let filteredActivities = this.activities;
+    if (!filters) {
+      return this.storage.activities;
+    }
+
+    let filteredActivities = this.storage.activities;
 
     if (filters.date !== undefined) {
       filteredActivities = filteredActivities.filter((activity) =>
@@ -41,13 +45,13 @@ export class ActivityManager {
   }
 
   public getActivitiesByDate(date: DateOnly): Activity[] {
-    return this.activities.filter((activity) =>
+    return this.storage.activities.filter((activity) =>
       activity.logicalDate.equals(date)
     );
   }
 
   public getActivitiesByCategory(category: Category): Activity[] {
-    return this.activities.filter((activity) =>
+    return this.storage.activities.filter((activity) =>
       activity.category.equals(category)
     );
   }

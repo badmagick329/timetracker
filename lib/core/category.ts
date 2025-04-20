@@ -17,4 +17,8 @@ export class Category {
   public equals(other: Category) {
     return this.name.toLowerCase() === other.name.toLowerCase();
   }
+
+  public toString(): string {
+    return this.name;
+  }
 }

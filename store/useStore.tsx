@@ -16,11 +16,11 @@ type StoreContextType = {
     startTime,
     endTime,
     category,
-  }: CreateActivityParams) => Activity;
-  getActivities: (filters: {
+  }: CreateActivityParams) => Promise<Activity | null>;
+  getActivities: (filters?: {
     date?: DateOnly;
     category?: Category;
-  }) => Activity[];
+  }) => Promise<Activity[] | null>;
 };
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);

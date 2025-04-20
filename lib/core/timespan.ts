@@ -1,13 +1,13 @@
 import { DateOnly } from './date-only';
 
 export class Timespan {
-  private start: Date;
-  private end: Date;
+  private _start: Date;
+  private _end: Date;
   private _logicalDate: DateOnly;
 
   private constructor(start: Date, end: Date, logicalDate: DateOnly) {
-    this.start = start;
-    this.end = end;
+    this._start = start;
+    this._end = end;
     this._logicalDate = logicalDate;
   }
 
@@ -19,11 +19,19 @@ export class Timespan {
     return new Timespan(start, end, logicalDate);
   }
 
+  get start(): Date {
+    return this._start;
+  }
+
+  get end(): Date {
+    return this._end;
+  }
+
   /**
    * Returns the duration of the timespan in milliseconds.
    */
   get duration(): number {
-    return this.end.getTime() - this.start.getTime();
+    return this._end.getTime() - this._start.getTime();
   }
 
   get logicalDate(): DateOnly {
