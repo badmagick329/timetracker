@@ -1,7 +1,5 @@
 import { useActivities } from '@/hooks/useActivities';
 import { Activity } from '@/lib/core/activity';
-import { Category } from '@/lib/core/category';
-import { DateOnly } from '@/lib/core/date-only';
 import { CreateActivityParams } from '@/lib/types';
 import { createContext, useContext, useState } from 'react';
 
@@ -17,10 +15,8 @@ type StoreContextType = {
     endTime,
     category,
   }: CreateActivityParams) => Promise<Activity | null>;
-  getActivities: (filters?: {
-    date?: DateOnly;
-    category?: Category;
-  }) => Promise<Activity[] | null>;
+  activities: Activity[];
+  isLoadingActivities: boolean;
 };
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -28,13 +24,14 @@ const StoreContext = createContext<StoreContextType | undefined>(undefined);
 export const StoreProvider = ({ children }: { children: React.ReactNode }) => {
   const [startTime, setStartTime] = useState<Date | undefined>(undefined);
   const [endTime, setEndTime] = useState<Date | undefined>(undefined);
-  const { createActivity, getActivities } = useActivities();
+  const { createActivity, activities, isLoading } = useActivities();
 
   return (
     <StoreContext.Provider
       value={{
         createActivity,
-        getActivities,
+        activities,
+        isLoadingActivities: isLoading,
         timerState: {
           startTime,
           endTime,

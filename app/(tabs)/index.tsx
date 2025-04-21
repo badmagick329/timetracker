@@ -1,5 +1,5 @@
 import { View } from 'react-native';
-import '../../global.css';
+import '@/global.css';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import CategoryPicker from '@/components/home/CategoryPicker';
@@ -28,7 +28,7 @@ export default function Index() {
     DisplayedCategory | undefined
   >(undefined);
   const [activityInProgress, setActivityInProgress] = useState(false);
-  const { createActivity, getActivities, timerState } = useStore();
+  const { createActivity, timerState } = useStore();
   const { startTime, setStartTime, setEndTime } = timerState;
 
   const handleStart = () => {
@@ -51,8 +51,6 @@ export default function Index() {
       endTime: newEndTime,
       category: selectedCategory.value,
     });
-
-    console.log(`Number of activities: ${(await getActivities())?.length}`);
   };
 
   return (

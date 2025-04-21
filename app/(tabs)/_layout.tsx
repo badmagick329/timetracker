@@ -18,7 +18,7 @@ export default function Tablayout() {
         }}
       />
       <Tabs.Screen
-        name='EntryList'
+        name='Activities'
         options={{
           title: 'list',
           tabBarIcon: ({ color, focused }) => (

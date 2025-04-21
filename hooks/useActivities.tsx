@@ -5,7 +5,7 @@ import { DateOnly } from '@/lib/core/date-only';
 import { Timespan } from '@/lib/core/timespan';
 import { ActivitiesJsonStorage } from '@/lib/data/activities-json-storage';
 import { CreateActivityParams } from '@/lib/types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 class ActivityManagerSingleton {
   private static instance: ActivityManager | null = null;
@@ -34,6 +34,7 @@ class ActivityManagerSingleton {
 export function useActivities() {
   const [activityManager, setActivityManager] =
     useState<ActivityManager | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -44,6 +45,7 @@ export function useActivities() {
         const manager = await ActivityManagerSingleton.getInstance();
         if (isMounted) {
           setActivityManager(manager);
+          setActivities(manager.getActivities());
           setIsLoading(false);
         }
       } catch (error) {
@@ -61,31 +63,28 @@ export function useActivities() {
     };
   }, []);
 
-  const createActivity = async ({
-    startTime,
-    endTime,
-    category,
-  }: CreateActivityParams): Promise<Activity | null> => {
-    if (activityManager === null) return null;
+  const createActivity = useCallback(
+    async ({
+      startTime,
+      endTime,
+      category,
+    }: CreateActivityParams): Promise<Activity | null> => {
+      if (activityManager === null) return null;
 
-    const logicalDate = new DateOnly(startTime);
-    const timespan = Timespan.create(startTime, endTime, logicalDate);
-    const categoryObj = Category.create(category);
-    const activity = new Activity(timespan, categoryObj);
-    activityManager.addActivity(activity);
-    return activity;
-  };
-
-  const getActivities = async (filters?: {
-    date?: DateOnly;
-    category?: Category;
-  }): Promise<Activity[] | null> => {
-    if (activityManager === null) return null;
-    return activityManager.getActivities(filters);
-  };
+      const logicalDate = new DateOnly(startTime);
+      const timespan = Timespan.create(startTime, endTime, logicalDate);
+      const categoryObj = Category.create(category);
+      const activity = new Activity(timespan, categoryObj);
+      await activityManager.addActivity(activity);
+      setActivities([...activityManager.getActivities()]);
+      return activity;
+    },
+    [activityManager]
+  );
 
   return {
     createActivity,
-    getActivities,
+    activities,
+    isLoading,
   };
 }

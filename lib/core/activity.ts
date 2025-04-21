@@ -24,6 +24,14 @@ export class Activity {
     return this.timespan.logicalDate;
   }
 
+  get start() {
+    return this.timespan.start;
+  }
+
+  get end() {
+    return this.timespan.end;
+  }
+
   // TODO: using this for ID for now. change later
   toString(): string {
     return `${this.timespan.start}__${this.timespan.end}__${this.category}__${this.summary}`;

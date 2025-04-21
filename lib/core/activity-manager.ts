@@ -3,6 +3,11 @@ import { Category } from './category';
 import { DateOnly } from './date-only';
 import { IActivitiesStorage } from './iactivities-storage';
 
+type ActivityFilters = {
+  date?: DateOnly;
+  category?: Category;
+};
+
 export class ActivityManager {
   private storage: IActivitiesStorage;
 
@@ -19,10 +24,7 @@ export class ActivityManager {
     return await this.storage.removeActivity(activity.toString());
   }
 
-  public getActivities(filters?: {
-    date?: DateOnly;
-    category?: Category;
-  }): Activity[] {
+  public getActivities(filters?: ActivityFilters): Activity[] {
     if (!filters) {
       return this.storage.activities;
     }
@@ -44,27 +46,22 @@ export class ActivityManager {
     return filteredActivities;
   }
 
-  public getActivitiesByDate(date: DateOnly): Activity[] {
-    return this.storage.activities.filter((activity) =>
-      activity.logicalDate.equals(date)
-    );
+  public static groupByLogicalDate(activities: Activity[]) {
+    const grouped: { [key: string]: Activity[] } = {};
+
+    activities.forEach((activity) => {
+      const dateKey = activity.logicalDate.toString();
+      if (!grouped[dateKey]) {
+        grouped[dateKey] = [];
+      }
+      grouped[dateKey].push(activity);
+    });
+
+    return grouped;
   }
 
-  public getActivitiesByCategory(category: Category): Activity[] {
-    return this.storage.activities.filter((activity) =>
-      activity.category.equals(category)
-    );
-  }
-
-  public getTotalDurationByDate(date: DateOnly): number {
-    return this.getActivitiesByDate(date).reduce(
-      (total, activity) => total + activity.duration,
-      0
-    );
-  }
-
-  public getTotalDurationByCategory(category: Category): number {
-    return this.getActivitiesByCategory(category).reduce(
+  public getTotalDuration(filters?: ActivityFilters): number {
+    return this.getActivities(filters).reduce(
       (total, activity) => total + activity.duration,
       0
     );
