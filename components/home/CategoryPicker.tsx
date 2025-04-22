@@ -9,19 +9,23 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { DisplayedCategory } from '@/lib/types';
+import { useTimerStore } from '@/store/useTimerStore';
 
 export default function CategoryPicker({
   categories,
   onValueChange,
-  activityInProgress,
 }: {
   categories: DisplayedCategory[];
   onValueChange: (option: DisplayedCategory | undefined) => void;
-  activityInProgress: boolean;
 }) {
   if (categories.length === 0) {
     categories = [{ value: 'other', label: 'Other' }];
   }
+
+  const startTime = useTimerStore((state) => state.startTime);
+  const endTime = useTimerStore((state) => state.endTime);
+  const canStart = startTime === undefined && endTime === undefined;
+
   const insets = useSafeAreaInsets();
   const contentInsets = {
     top: insets.top,
@@ -34,7 +38,7 @@ export default function CategoryPicker({
     <Select onValueChange={onValueChange}>
       <SelectTrigger
         className='w-[250px] bg-muted-foreground/20'
-        disabled={activityInProgress}
+        disabled={!canStart}
       >
         <SelectValue
           className='text-foreground text-sm native:text-lg'

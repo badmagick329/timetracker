@@ -8,8 +8,9 @@ import { CreateActivityParams } from '@/lib/types';
 import { useEffect, useState, useCallback } from 'react';
 
 class ActivityManagerSingleton {
-  private static instance: ActivityManager | null = null;
-  private static initializationPromise: Promise<ActivityManager> | null = null;
+  private static instance: ActivityManager | undefined = undefined;
+  private static initializationPromise: Promise<ActivityManager> | undefined =
+    undefined;
 
   static async getInstance(): Promise<ActivityManager> {
     if (this.instance) {
@@ -32,8 +33,9 @@ class ActivityManagerSingleton {
 }
 
 export function useActivities() {
-  const [activityManager, setActivityManager] =
-    useState<ActivityManager | null>(null);
+  const [activityManager, setActivityManager] = useState<
+    ActivityManager | undefined
+  >(undefined);
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -68,8 +70,8 @@ export function useActivities() {
       startTime,
       endTime,
       category,
-    }: CreateActivityParams): Promise<Activity | null> => {
-      if (activityManager === null) return null;
+    }: CreateActivityParams): Promise<Activity | undefined> => {
+      if (activityManager === undefined) return undefined;
 
       const logicalDate = new DateOnly(startTime);
       const timespan = Timespan.create(startTime, endTime, logicalDate);

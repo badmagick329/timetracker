@@ -7,8 +7,9 @@ import { DisplayedCategory } from '@/lib/types';
 import { useState } from 'react';
 import ElapsedTime from '@/components/home/ElapasedTime';
 import { useStore } from '@/store/useStore';
+import { useTimerStore } from '@/store/useTimerStore';
 
-const testCategories = [
+const testCategories: DisplayedCategory[] = [
   {
     label: 'Study',
     value: 'study',
@@ -27,46 +28,51 @@ export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<
     DisplayedCategory | undefined
   >(undefined);
-  const [activityInProgress, setActivityInProgress] = useState(false);
-  const { createActivity, timerState } = useStore();
-  const { startTime, setStartTime, setEndTime } = timerState;
+  const { createActivity } = useStore();
+  const startTime = useTimerStore((state) => state.startTime);
+  const endTime = useTimerStore((state) => state.endTime);
+  const startTimer = useTimerStore((state) => state.startTimer);
+  const endTimer = useTimerStore((state) => state.endTimer);
 
   const handleStart = () => {
-    console.log(`Starting ${selectedCategory?.value}`);
-    setActivityInProgress(true);
-    setStartTime(new Date());
+    const newTime = startTimer();
+    if (newTime) {
+      console.log(`Starting ${selectedCategory?.value}`);
+    }
   };
 
   const handleEnd = async () => {
-    console.log(`Ending ${selectedCategory?.value}`);
-    const newEndTime = new Date();
-    setEndTime(newEndTime);
-    setActivityInProgress(false);
-    console.log(`${startTime} ${newEndTime} ${selectedCategory?.value}`);
-    if (!(startTime && newEndTime && selectedCategory)) {
+    if (selectedCategory === undefined) {
       return;
     }
+    const newTime = endTimer();
+    if (!newTime) {
+      return;
+    }
+
+    console.log(`Ending ${selectedCategory?.value}`);
+
     await createActivity({
-      startTime: startTime,
-      endTime: newEndTime,
+      startTime: startTime!,
+      endTime: newTime,
       category: selectedCategory.value,
     });
   };
 
+  const canStart = startTime === undefined && endTime === undefined;
+  const canEnd = startTime !== undefined && endTime === undefined;
+
   return (
     <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
       <View className='flex justify-center items-center flex-row w-full'>
-        <ElapsedTime
-          category={selectedCategory}
-          activityInProgress={activityInProgress}
-        />
+        <ElapsedTime category={selectedCategory} />
       </View>
       <View className='flex justify-center items-center gap-8 flex-row w-full'>
         <Button
           className='w-32'
           size={'lg'}
           variant={'accent'}
-          disabled={!selectedCategory}
+          disabled={!selectedCategory || !canStart}
           onPress={handleStart}
         >
           <Text>Start</Text>
@@ -75,7 +81,7 @@ export default function Index() {
           className='w-32'
           size={'lg'}
           variant={'destructive'}
-          disabled={!selectedCategory || !activityInProgress}
+          disabled={!canEnd || !selectedCategory}
           onPress={handleEnd}
         >
           <Text>End</Text>
@@ -85,7 +91,6 @@ export default function Index() {
         <CategoryPicker
           categories={testCategories}
           onValueChange={setSelectedCategory}
-          activityInProgress={activityInProgress}
         />
       </View>
     </View>

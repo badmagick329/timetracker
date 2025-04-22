@@ -3,34 +3,33 @@ import { Text } from '@/components/ui/text';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Button } from '@/components/ui/button';
-import { useStore } from '@/store/useStore';
+import { useTimerStore } from '@/store/useTimerStore';
 
 export default function ElapsedTime({
   category,
-  activityInProgress,
 }: {
   category: DisplayedCategory | undefined;
-  activityInProgress: boolean;
 }) {
   const [duration, setDuration] = useState(0); // in milliseconds
-  const { timerState } = useStore();
-  const { startTime, endTime, setStartTime, setEndTime } = timerState;
+  const startTime = useTimerStore((state) => state.startTime);
+  const endTime = useTimerStore((state) => state.endTime);
+  const getDuration = useTimerStore((state) => state.getDuration);
+  const resetTimer = useTimerStore((state) => state.resetTimer);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
 
-    if (activityInProgress && startTime && !endTime) {
+    if (startTime && !endTime) {
       interval = setInterval(() => {
-        setDuration(new Date().getTime() - startTime.getTime());
+        setDuration(getDuration());
       }, 100);
     }
 
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [activityInProgress, startTime, endTime]);
+  }, [startTime, endTime]);
 
-  // Format duration to be more readable (HH:MM:SS.MS)
   const formattedDuration = () => {
     const ms = ((duration % 1000) / 10) | 0;
     const seconds = Math.floor((duration / 1000) % 60);
@@ -66,8 +65,7 @@ export default function ElapsedTime({
           disabled={!(startTime && endTime && duration > 0)}
           onPress={() => {
             setDuration(0);
-            setStartTime(undefined);
-            setEndTime(undefined);
+            resetTimer();
           }}
         >
           <Text>Clear</Text>

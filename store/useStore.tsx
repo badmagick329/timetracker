@@ -14,7 +14,7 @@ type StoreContextType = {
     startTime,
     endTime,
     category,
-  }: CreateActivityParams) => Promise<Activity | null>;
+  }: CreateActivityParams) => Promise<Activity | undefined>;
   activities: Activity[];
   isLoadingActivities: boolean;
 };
