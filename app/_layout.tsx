@@ -14,6 +14,8 @@ import { NAV_THEME } from '@/lib/constants';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
 import { useActivityStore } from '@/store/useActivityStore';
+import { useCategoryStore } from '@/store/useCategoryStore';
+import { CategoriesJsonStorage } from '@/lib/data/categories-json-storage';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -33,7 +35,8 @@ export default function RootLayout() {
   const hasMounted = useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
-  const initialize = useActivityStore((state) => state.initialize);
+  const initializeActivityStore = useActivityStore((state) => state.initialize);
+  const initialCategoryStore = useCategoryStore((state) => state.initialize);
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
@@ -49,8 +52,11 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    initialize();
-  }, [initialize]);
+    initializeActivityStore();
+    (async () => {
+      initialCategoryStore(await CategoriesJsonStorage.create());
+    })();
+  }, [initializeActivityStore, initialCategoryStore]);
 
   if (!isColorSchemeLoaded) {
     return null;

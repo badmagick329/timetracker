@@ -1,14 +1,14 @@
-import { DisplayedCategory } from '@/lib/types';
 import { Text } from '@/components/ui/text';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import { Button } from '@/components/ui/button';
 import { useTimerStore } from '@/store/useTimerStore';
+import { Category } from '@/lib/core/category';
 
 export default function ElapsedTime({
   category,
 }: {
-  category: DisplayedCategory | undefined;
+  category: Category | undefined;
 }) {
   const [duration, setDuration] = useState(0); // in milliseconds
   const startTime = useTimerStore((state) => state.startTime);
@@ -52,7 +52,7 @@ export default function ElapsedTime({
     <View className='flex flex-col justify-center gap-24 w-full px-2'>
       <View className='flex flex-col justify-center gap-2 px-6'>
         <Text className='text-lg font-bold'>
-          {category && startTime && `${category?.label}`}
+          {category && startTime && `${category.name}`}
         </Text>
         <Text className='text-lg'>
           {startTime &&

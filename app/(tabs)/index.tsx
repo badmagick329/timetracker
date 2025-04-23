@@ -3,30 +3,16 @@ import '@/global.css';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import CategoryPicker from '@/components/home/CategoryPicker';
-import { DisplayedCategory } from '@/lib/types';
 import { useState } from 'react';
 import ElapsedTime from '@/components/home/ElapasedTime';
 import { useTimerStore } from '@/store/useTimerStore';
 import { useActivityStore } from '@/store/useActivityStore';
-
-const testCategories: DisplayedCategory[] = [
-  {
-    label: 'Study',
-    value: 'study',
-  },
-  {
-    label: 'Workout',
-    value: 'workout',
-  },
-  {
-    label: 'Gaming',
-    value: 'gaming',
-  },
-];
+import { useCategoryStore } from '@/store/useCategoryStore';
+import { Category } from '@/lib/core/category';
 
 export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<
-    DisplayedCategory | undefined
+    Category | undefined
   >(undefined);
   const createActivity = useActivityStore((state) => state.createActivity);
   const startTime = useTimerStore((state) => state.startTime);
@@ -34,11 +20,13 @@ export default function Index() {
   const startTimer = useTimerStore((state) => state.startTimer);
   const endTimer = useTimerStore((state) => state.endTimer);
   const getLastActivity = useActivityStore((state) => state.getLastActivity);
+  const categories = useCategoryStore((state) => state.categories);
+  const getCategory = useCategoryStore((state) => state.getCategory);
 
   const handleStart = () => {
     const newTime = startTimer();
     if (newTime) {
-      console.log(`Starting ${selectedCategory?.value}`);
+      console.log(`Starting ${selectedCategory}`);
     }
   };
 
@@ -55,17 +43,21 @@ export default function Index() {
       return;
     }
 
-    console.log(`Ending ${selectedCategory?.value}`);
+    console.log(`Ending ${selectedCategory}`);
 
     await createActivity({
       startTime: customStart || startTime!,
       endTime: newTime,
-      category: selectedCategory.value,
+      category: selectedCategory,
     });
   };
 
   const canStart = startTime === undefined && endTime === undefined;
   const canEnd = startTime !== undefined && endTime === undefined;
+  const displayedCategories = categories.map((c) => ({
+    value: c.id,
+    label: c.name,
+  }));
 
   return (
     <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
@@ -94,6 +86,8 @@ export default function Index() {
         </View>
         <View className='flex justify-center items-center flex-row'>
           <Button
+            className='w-72'
+            size='lg'
             variant={'accent'}
             disabled={!canStart || !selectedCategory || !getLastActivity()}
             onPress={() => {
@@ -116,8 +110,16 @@ export default function Index() {
       </View>
       <View className='flex justify-center items-center flex-row w-full'>
         <CategoryPicker
-          categories={testCategories}
-          onValueChange={setSelectedCategory}
+          displayedCategories={displayedCategories}
+          onValueChange={(option) => {
+            console.log(`Value changed. ${JSON.stringify(option)}`);
+            if (!option?.value) {
+              console.log(`category with ${option?.value} not found`);
+              return;
+            }
+            const foundCategory = getCategory(option.value);
+            setSelectedCategory(foundCategory);
+          }}
         />
       </View>
     </View>

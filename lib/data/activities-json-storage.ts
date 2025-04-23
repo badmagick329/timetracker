@@ -1,11 +1,11 @@
 import { Activity } from '@/lib/core/activity';
-import { IActivitiesStorage } from '@/lib/core/iactivities-storage';
+import { IActivitiesRepository } from '@/lib/core/iactivities-repository';
 import * as FileSystem from 'expo-file-system';
 import { Timespan } from '@/lib/core/timespan';
 import { DateOnly } from '@/lib/core/date-only';
 import { Category } from '@/lib/core/category';
 
-export class ActivitiesJsonStorage implements IActivitiesStorage {
+export class ActivitiesJsonStorage implements IActivitiesRepository {
   private saveFile: string;
   private _activities: Activity[];
 
@@ -99,7 +99,7 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
           _end: string;
           _logicalDate: { _value: string };
         };
-        _category: { name: string };
+        _category: { id: string; name: string };
         summary: string;
       }[];
 
@@ -112,7 +112,10 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
             new Date(_end),
             new DateOnly(new Date(_logicalDate._value))
           ),
-          category: Category.create(activity._category.name),
+          category: Category.create(
+            activity._category.name,
+            activity._category.id
+          ),
           id: activity._id,
         });
         return created;
@@ -129,6 +132,7 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
   private async save(): Promise<void> {
     try {
       const fileContent = JSON.stringify(this._activities);
+      console.log('Saving\n', fileContent);
       await FileSystem.writeAsStringAsync(this.saveFile, fileContent);
       console.log('Activities saved to file:', this.saveFile);
     } catch (error) {

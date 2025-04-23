@@ -1,17 +1,14 @@
+import { ActivityFilters } from '@/lib/types';
 import { Activity } from './activity';
-import { Category } from './category';
-import { DateOnly } from './date-only';
-import { IActivitiesStorage } from './iactivities-storage';
+import { IActivitiesRepository } from './iactivities-repository';
+import { IActivitiesQueries } from './iactivities-queries';
 
-type ActivityFilters = {
-  date?: DateOnly;
-  category?: Category;
-};
+export class ActivityManager
+  implements IActivitiesRepository, IActivitiesQueries
+{
+  private storage: IActivitiesRepository;
 
-export class ActivityManager implements IActivitiesStorage {
-  private storage: IActivitiesStorage;
-
-  constructor(storage: IActivitiesStorage) {
+  constructor(storage: IActivitiesRepository) {
     this.storage = storage;
   }
 
@@ -60,10 +57,10 @@ export class ActivityManager implements IActivitiesStorage {
     return filteredActivities;
   }
 
-  static groupByLogicalDate(activities: Activity[]) {
+  groupByLogicalDate() {
     const grouped: { [key: string]: Activity[] } = {};
 
-    activities.forEach((activity) => {
+    this.storage.activities.forEach((activity) => {
       const dateKey = activity.logicalDate.toString();
       if (!grouped[dateKey]) {
         grouped[dateKey] = [];

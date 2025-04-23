@@ -24,6 +24,7 @@ type ActivityActions = {
   removeActivity: (activity: Activity) => Promise<string | undefined>;
   getLastActivity: () => Activity | undefined;
   resetAll: () => Promise<void>;
+  groupByLogicalDate: () => { [key: string]: Activity[] } | undefined;
 };
 
 const initialState: ActivityState = {
@@ -80,7 +81,7 @@ export const useActivityStore = create(
         const logicalDate = new DateOnly(startTime);
         const activity = new Activity({
           timespan: Timespan.create(startTime, endTime, logicalDate),
-          category: Category.create(category),
+          category: Category.create(category.name, category.id),
         });
         await activityManager.addActivity(activity);
         console.log('Activity added:', activity);
@@ -138,6 +139,17 @@ export const useActivityStore = create(
 
       await activityManager.resetAll();
       set({ activities: activityManager.getActivities() });
+    },
+    groupByLogicalDate: () => {
+      const { activityManager } = get();
+      if (!activityManager) {
+        console.error(
+          'Cannot group activities: Activity Manager not initialized.'
+        );
+        return undefined;
+      }
+
+      return activityManager.groupByLogicalDate();
     },
   }))
 );

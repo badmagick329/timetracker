@@ -1,24 +1,45 @@
 export class Category {
-  private name: string;
+  private _name: string;
+  private _id: string;
 
-  private constructor(name: string) {
-    this.name = name;
+  private constructor(name: string, id: string) {
+    this._name = name;
+    this._id = id;
   }
 
-  public static create(name: string) {
+  static create(name: string, id: string = '') {
     name = name.trim();
     if (name === '') {
       throw new Error('Name cannot be empty');
     }
 
-    return new Category(name);
+    return new Category(name, id);
   }
 
-  public equals(other: Category) {
-    return this.name.toLowerCase() === other.name.toLowerCase();
+  get id(): string {
+    return this._id;
   }
 
-  public toString(): string {
-    return this.name;
+  set id(val) {
+    this._id = val;
+  }
+
+  get name(): string {
+    return this._name;
+  }
+
+  equals(other: Category) {
+    return this._name.toLowerCase() === other.name.toLowerCase();
+  }
+
+  toString(): string {
+    return this._name;
+  }
+
+  toJSON() {
+    return {
+      id: this._id,
+      name: this._name,
+    };
   }
 }

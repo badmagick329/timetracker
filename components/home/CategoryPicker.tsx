@@ -10,18 +10,15 @@ import {
 } from '@/components/ui/select';
 import { DisplayedCategory } from '@/lib/types';
 import { useTimerStore } from '@/store/useTimerStore';
+import { Text } from '../ui/text';
 
 export default function CategoryPicker({
-  categories,
+  displayedCategories,
   onValueChange,
 }: {
-  categories: DisplayedCategory[];
+  displayedCategories: DisplayedCategory[];
   onValueChange: (option: DisplayedCategory | undefined) => void;
 }) {
-  if (categories.length === 0) {
-    categories = [{ value: 'other', label: 'Other' }];
-  }
-
   const startTime = useTimerStore((state) => state.startTime);
   const endTime = useTimerStore((state) => state.endTime);
   const canStart = startTime === undefined && endTime === undefined;
@@ -33,6 +30,10 @@ export default function CategoryPicker({
     left: 12,
     right: 12,
   };
+
+  if (displayedCategories.length === 0) {
+    return <Text>No categories created</Text>;
+  }
 
   return (
     <Select onValueChange={onValueChange}>
@@ -48,7 +49,7 @@ export default function CategoryPicker({
       <SelectContent insets={contentInsets} className='w-[250px]'>
         <SelectGroup>
           <SelectLabel>Categories</SelectLabel>
-          {categories.map((c) => {
+          {displayedCategories.map((c) => {
             return (
               <SelectItem key={c.value} label={c.label} value={c.value}>
                 {c.label}

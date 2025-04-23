@@ -7,7 +7,7 @@ export default function Tablayout() {
       <Tabs.Screen
         name='index'
         options={{
-          title: 'home',
+          title: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={focused ? 'home-sharp' : 'home-outline'}
@@ -18,9 +18,24 @@ export default function Tablayout() {
         }}
       />
       <Tabs.Screen
-        name='Activities'
+        name='ActivitiesPage'
         options={{
-          title: 'list',
+          title: 'Activities',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons
+              name={
+                focused ? 'information-circle' : 'information-circle-outline'
+              }
+              color={color}
+              size={24}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name='SettingsPage'
+        options={{
+          title: 'Settings',
           tabBarIcon: ({ color, focused }) => (
             <Ionicons
               name={

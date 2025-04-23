@@ -1,3 +1,6 @@
+import { DateOnly } from '@/lib/core/date-only';
+import { Category } from '@/lib/core/category';
+
 export type DisplayedCategory = {
   value: string;
   label: string;
@@ -6,5 +9,10 @@ export type DisplayedCategory = {
 export type CreateActivityParams = {
   startTime: Date;
   endTime: Date;
-  category: string;
+  category: { id: string; name: string };
+};
+
+export type ActivityFilters = {
+  date?: DateOnly;
+  category?: Category;
 };

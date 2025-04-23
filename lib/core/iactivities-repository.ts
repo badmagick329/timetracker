@@ -1,6 +1,6 @@
 import { Activity } from './activity';
 
-export interface IActivitiesStorage {
+export interface IActivitiesRepository {
   activities: Activity[];
   addActivity(activity: Activity): Promise<string>;
   removeActivity(activityId: string): Promise<string | undefined>;

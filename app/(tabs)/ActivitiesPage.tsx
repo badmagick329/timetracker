@@ -1,19 +1,19 @@
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Activity } from '@/lib/core/activity';
-import { ActivityManager } from '@/lib/core/activity-manager';
 import { useActivityStore } from '@/store/useActivityStore';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
-export default function Activities() {
+export default function ActivitiesPage() {
   const activitiesFromStore = useActivityStore((state) => state.activities);
   const isLoadingActivities = useActivityStore((state) => state.isLoading);
+  const groupByLogicalDate = useActivityStore(
+    (state) => state.groupByLogicalDate
+  );
   const resetAll = useActivityStore((state) => state.resetAll);
 
-  const activities = useMemo(() => {
-    return ActivityManager.groupByLogicalDate(activitiesFromStore);
-  }, [activitiesFromStore]);
+  const activities = useMemo(() => groupByLogicalDate(), [activitiesFromStore]);
 
   if (isLoadingActivities) {
     return (
