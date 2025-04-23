@@ -37,4 +37,12 @@ export class Timespan {
   get logicalDate(): DateOnly {
     return this._logicalDate;
   }
+
+  toJSON() {
+    return {
+      start: this._start.toString(),
+      end: this._end.toString(),
+      logicalDate: this._logicalDate.toString(),
+    };
+  }
 }

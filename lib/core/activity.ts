@@ -55,4 +55,13 @@ export class Activity {
   toString(): string {
     return `${this.timespan.start}__${this.timespan.end}__${this.category}__${this.summary}`;
   }
+
+  toJSON() {
+    return {
+      category: this.category,
+      timespan: this.timespan,
+      summary: this.summary,
+      id: this.id,
+    };
+  }
 }

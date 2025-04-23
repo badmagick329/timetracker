@@ -36,4 +36,8 @@ export class DateOnly {
       this.day === other.day
     );
   }
+
+  toJSON() {
+    return this._value.toString();
+  }
 }

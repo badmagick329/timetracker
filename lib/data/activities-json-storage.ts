@@ -32,7 +32,6 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
   async addActivity(activity: Activity): Promise<string> {
     this._activities.push(activity);
     activity.id = activity.start.toString();
-    console.log('Activity added:', activity);
     await this.save();
     return activity.id;
   }
@@ -93,30 +92,31 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
       const fileContent = await FileSystem.readAsStringAsync(saveFile);
       console.log(`File contents read:\n${fileContent}`);
       const activities = JSON.parse(fileContent) as {
-        _id: string;
+        id: string;
         timespan: {
-          _start: string;
-          _end: string;
-          _logicalDate: { _value: string };
+          start: string;
+          end: string;
+          logicalDate: string;
         };
-        _category: { id: string; name: string };
+        category: { id: string; name: string };
         summary: string;
       }[];
+      console.log('parsed data', activities);
 
       const loaded = activities.map((activity) => {
-        const { _start, _end, _logicalDate } = activity.timespan;
+        const { start, end, logicalDate } = activity.timespan;
 
         const created = new Activity({
           timespan: Timespan.create(
-            new Date(_start),
-            new Date(_end),
-            new DateOnly(new Date(_logicalDate._value))
+            new Date(start),
+            new Date(end),
+            new DateOnly(new Date(logicalDate))
           ),
           category: Category.create(
-            activity._category.name,
-            activity._category.id
+            activity.category.name,
+            activity.category.id
           ),
-          id: activity._id,
+          id: activity.id,
         });
         return created;
       });
