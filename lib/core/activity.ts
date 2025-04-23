@@ -5,11 +5,31 @@ export class Activity {
   private timespan: Timespan;
   private _category: Category;
   private summary: string;
+  private _id: string;
 
-  constructor(timespan: Timespan, category: Category, summary: string = '') {
+  constructor({
+    timespan,
+    category,
+    summary = '',
+    id = '',
+  }: {
+    timespan: Timespan;
+    category: Category;
+    summary?: string;
+    id?: string;
+  }) {
     this.timespan = timespan;
     this._category = category;
     this.summary = summary;
+    this._id = id;
+  }
+
+  get id() {
+    return this._id;
+  }
+
+  set id(val) {
+    this._id = val;
   }
 
   get category() {
@@ -32,7 +52,6 @@ export class Activity {
     return this.timespan.end;
   }
 
-  // TODO: using this for ID for now. change later
   toString(): string {
     return `${this.timespan.start}__${this.timespan.end}__${this.category}__${this.summary}`;
   }

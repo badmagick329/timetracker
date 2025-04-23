@@ -21,7 +21,7 @@ type ActivityActions = {
   createActivity: (
     params: CreateActivityParams
   ) => Promise<Activity | undefined>;
-  removeActivity: (activity: Activity) => Promise<boolean>;
+  removeActivity: (activity: Activity) => Promise<string | undefined>;
 };
 
 const initialState: ActivityState = {
@@ -76,10 +76,12 @@ export const useActivityStore = create(
 
       try {
         const logicalDate = new DateOnly(startTime);
-        const timespan = Timespan.create(startTime, endTime, logicalDate);
-        const categoryObj = Category.create(category);
-        const activity = new Activity(timespan, categoryObj);
+        const activity = new Activity({
+          timespan: Timespan.create(startTime, endTime, logicalDate),
+          category: Category.create(category),
+        });
         await activityManager.addActivity(activity);
+        console.log('Activity added:', activity);
 
         set({ activities: [...activityManager.getActivities()] });
         return activity;
@@ -95,17 +97,19 @@ export const useActivityStore = create(
         console.error(
           'Cannot remove activity: Activity Manager not initialized.'
         );
-        return false;
+        return undefined;
       }
       try {
-        const removed = await activityManager.removeActivity(activity);
+        const removed = await activityManager.removeActivity(
+          activity.toString()
+        );
         if (removed) {
           set({ activities: [...activityManager.getActivities()] });
         }
-        return removed;
+        return activity.toString();
       } catch (error) {
         console.error('Failed to remove activity:', error);
-        return false;
+        return undefined;
       }
     },
   }))

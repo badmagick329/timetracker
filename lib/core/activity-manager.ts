@@ -8,20 +8,26 @@ type ActivityFilters = {
   category?: Category;
 };
 
-export class ActivityManager {
+export class ActivityManager implements IActivitiesStorage {
   private storage: IActivitiesStorage;
 
   constructor(storage: IActivitiesStorage) {
     this.storage = storage;
   }
 
-  public async addActivity(activity: Activity): Promise<void> {
-    await this.storage.addActivity(activity);
-    console.log('Activity added:', activity);
+  get activities() {
+    return this.storage.activities;
   }
 
-  public async removeActivity(activity: Activity): Promise<boolean> {
-    return await this.storage.removeActivity(activity.toString());
+  public async addActivity(activity: Activity): Promise<string> {
+    return await this.storage.addActivity(activity);
+  }
+
+  public async removeActivity(activityId: string): Promise<string | undefined> {
+    return await this.storage.removeActivity(activityId);
+  }
+  updateActivity(activity: Activity): Promise<boolean> {
+    throw new Error('Method not implemented.');
   }
 
   public getActivities(filters?: ActivityFilters): Activity[] {

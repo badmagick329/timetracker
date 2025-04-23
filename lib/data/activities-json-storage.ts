@@ -1,9 +1,9 @@
-import { Activity } from '../core/activity';
-import { IActivitiesStorage } from '../core/iactivities-storage';
+import { Activity } from '@/lib/core/activity';
+import { IActivitiesStorage } from '@/lib/core/iactivities-storage';
 import * as FileSystem from 'expo-file-system';
-import { Timespan } from '../core/timespan';
-import { DateOnly } from '../core/date-only';
-import { Category } from '../core/category';
+import { Timespan } from '@/lib/core/timespan';
+import { DateOnly } from '@/lib/core/date-only';
+import { Category } from '@/lib/core/category';
 
 export class ActivitiesJsonStorage implements IActivitiesStorage {
   private saveFile: string;
@@ -29,31 +29,29 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
     return this._activities;
   }
 
-  async addActivity(activity: Activity): Promise<void> {
+  async addActivity(activity: Activity): Promise<string> {
     this._activities.push(activity);
+    activity.id = activity.start.toString();
     console.log('Activity added:', activity);
     await this.save();
+    return activity.id;
   }
 
-  async removeActivity(activityId: string): Promise<boolean> {
-    const index = this._activities.findIndex(
-      (a) => a.toString() === activityId
-    );
+  async removeActivity(activityId: string): Promise<string | undefined> {
+    const index = this._activities.findIndex((a) => a.id === activityId);
     if (index === -1) {
       console.error('Activity not found for removal:', activityId);
-      return false;
+      return undefined;
     }
 
     this._activities.splice(index, 1);
     console.log('Activity removed:', activityId);
     await this.save();
-    return true;
+    return activityId;
   }
 
   async updateActivity(activity: Activity): Promise<boolean> {
-    const index = this._activities.findIndex(
-      (a) => a.toString() === activity.toString()
-    );
+    const index = this._activities.findIndex((a) => a.id === activity.id);
     if (index !== -1) {
       this._activities[index] = activity;
       console.log('Activity updated:', activity);
@@ -75,6 +73,7 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
       const fileContent = await FileSystem.readAsStringAsync(saveFile);
       console.log(`File contents read:\n${fileContent}`);
       const activities = JSON.parse(fileContent) as {
+        _id: string;
         timespan: {
           _start: string;
           _end: string;
@@ -86,14 +85,17 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
 
       const loaded = activities.map((activity) => {
         const { _start, _end, _logicalDate } = activity.timespan;
-        const category = activity._category.name;
 
-        const timespan = Timespan.create(
-          new Date(_start),
-          new Date(_end),
-          new DateOnly(new Date(_logicalDate._value))
-        );
-        return new Activity(timespan, Category.create(category));
+        const created = new Activity({
+          timespan: Timespan.create(
+            new Date(_start),
+            new Date(_end),
+            new DateOnly(new Date(_logicalDate._value))
+          ),
+          category: Category.create(activity._category.name),
+          id: activity._id,
+        });
+        return created;
       });
       console.log(`Loaded ${loaded.length} activities`);
 
