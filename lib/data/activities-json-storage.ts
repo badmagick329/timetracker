@@ -63,6 +63,26 @@ export class ActivitiesJsonStorage implements IActivitiesStorage {
     }
   }
 
+  getLastActivity(): Activity | undefined {
+    if (this.activities.length === 0) {
+      return undefined;
+    }
+
+    return this.activities.reduce((prev, current) => {
+      return prev.end > current.end ? prev : current;
+    });
+  }
+
+  async resetAll(): Promise<void> {
+    this._activities = [];
+    try {
+      await FileSystem.deleteAsync(this.saveFile, { idempotent: true });
+      console.log('All activities reset and file deleted:', this.saveFile);
+    } catch (error) {
+      console.error('Error resetting activities:', error);
+    }
+  }
+
   private static async load(saveFile: string): Promise<Activity[]> {
     const info = await FileSystem.getInfoAsync(saveFile);
     if (!info.exists) {

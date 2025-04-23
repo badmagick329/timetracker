@@ -25,6 +25,10 @@ export default function ElapsedTime({
       }, 100);
     }
 
+    if (startTime && endTime) {
+      setDuration(getDuration());
+    }
+
     return () => {
       if (interval) clearInterval(interval);
     };

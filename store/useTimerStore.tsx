@@ -7,7 +7,7 @@ type TimerState = {
 };
 
 type TimerActions = {
-  startTimer: () => Date | undefined;
+  startTimer: (customStart?: Date) => Date | undefined;
   endTimer: () => Date | undefined;
   resetTimer: () => void;
   getDuration: () => number;
@@ -21,12 +21,12 @@ export const useTimerStore = create(
     },
     (set, get) => {
       return {
-        startTimer: () => {
+        startTimer: (customStart?: Date) => {
           if (get().startTime !== undefined) {
             return undefined;
           }
 
-          const now = new Date();
+          const now = customStart || new Date();
           set({ startTime: now });
           return now;
         },

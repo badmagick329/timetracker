@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { Activity } from '@/lib/core/activity';
 import { ActivityManager } from '@/lib/core/activity-manager';
@@ -8,6 +9,7 @@ import { View } from 'react-native';
 export default function Activities() {
   const activitiesFromStore = useActivityStore((state) => state.activities);
   const isLoadingActivities = useActivityStore((state) => state.isLoading);
+  const resetAll = useActivityStore((state) => state.resetAll);
 
   const activities = useMemo(() => {
     return ActivityManager.groupByLogicalDate(activitiesFromStore);
@@ -30,7 +32,7 @@ export default function Activities() {
   }
 
   return (
-    <View className='flex flex-1 flex-col items-center px-2'>
+    <View className='flex flex-1 flex-col items-center px-2 gap-8'>
       {Object.keys(activities).map((logicalDate) => (
         <View key={logicalDate} className='w-full'>
           <Text className='font-bold text-lg'>{logicalDate}</Text>
@@ -39,6 +41,12 @@ export default function Activities() {
           ))}
         </View>
       ))}
+      {/* Reset button for testing */}
+      <View className='flex justify-center items-center flex-row'>
+        <Button variant={'destructive'} onPress={resetAll}>
+          <Text>RESET ALL</Text>
+        </Button>
+      </View>
     </View>
   );
 }

@@ -33,6 +33,7 @@ export default function Index() {
   const endTime = useTimerStore((state) => state.endTime);
   const startTimer = useTimerStore((state) => state.startTimer);
   const endTimer = useTimerStore((state) => state.endTimer);
+  const getLastActivity = useActivityStore((state) => state.getLastActivity);
 
   const handleStart = () => {
     const newTime = startTimer();
@@ -41,19 +42,23 @@ export default function Index() {
     }
   };
 
-  const handleEnd = async () => {
+  const handleEnd = async (customStart?: Date) => {
     if (selectedCategory === undefined) {
+      console.log('No category selected');
       return;
     }
+    customStart && startTimer(customStart);
+
     const newTime = endTimer();
     if (!newTime) {
+      console.log('No end time available');
       return;
     }
 
     console.log(`Ending ${selectedCategory?.value}`);
 
     await createActivity({
-      startTime: startTime!,
+      startTime: customStart || startTime!,
       endTime: newTime,
       category: selectedCategory.value,
     });
@@ -67,25 +72,47 @@ export default function Index() {
       <View className='flex justify-center items-center flex-row w-full'>
         <ElapsedTime category={selectedCategory} />
       </View>
-      <View className='flex justify-center items-center gap-8 flex-row w-full'>
-        <Button
-          className='w-32'
-          size={'lg'}
-          variant={'accent'}
-          disabled={!selectedCategory || !canStart}
-          onPress={handleStart}
-        >
-          <Text>Start</Text>
-        </Button>
-        <Button
-          className='w-32'
-          size={'lg'}
-          variant={'destructive'}
-          disabled={!canEnd || !selectedCategory}
-          onPress={handleEnd}
-        >
-          <Text>End</Text>
-        </Button>
+      <View className='flex justify-center items-center gap-8 flex-col w-full'>
+        <View className='flex justify-center items-center gap-8 flex-row w-full'>
+          <Button
+            className='w-32'
+            size={'lg'}
+            disabled={!selectedCategory || !canStart}
+            onPress={handleStart}
+          >
+            <Text>Start</Text>
+          </Button>
+          <Button
+            className='w-32'
+            size={'lg'}
+            variant={'destructive'}
+            disabled={!canEnd || !selectedCategory}
+            onPress={() => handleEnd()}
+          >
+            <Text>End</Text>
+          </Button>
+        </View>
+        <View className='flex justify-center items-center flex-row'>
+          <Button
+            variant={'accent'}
+            disabled={!canStart || !selectedCategory || !getLastActivity()}
+            onPress={() => {
+              const lastActivity = getLastActivity();
+
+              if (lastActivity && lastActivity.end) {
+                console.log('Last Activity:', lastActivity);
+                handleEnd(lastActivity.end);
+              } else {
+                console.log(
+                  'No last activity found or start time is undefined'
+                );
+                handleEnd();
+              }
+            }}
+          >
+            <Text>End from last activity</Text>
+          </Button>
+        </View>
       </View>
       <View className='flex justify-center items-center flex-row w-full'>
         <CategoryPicker

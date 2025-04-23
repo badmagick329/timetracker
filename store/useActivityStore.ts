@@ -22,6 +22,8 @@ type ActivityActions = {
     params: CreateActivityParams
   ) => Promise<Activity | undefined>;
   removeActivity: (activity: Activity) => Promise<string | undefined>;
+  getLastActivity: () => Activity | undefined;
+  resetAll: () => Promise<void>;
 };
 
 const initialState: ActivityState = {
@@ -111,6 +113,31 @@ export const useActivityStore = create(
         console.error('Failed to remove activity:', error);
         return undefined;
       }
+    },
+
+    getLastActivity: () => {
+      const { activityManager } = get();
+      if (!activityManager) {
+        console.error(
+          'Cannot get last activity: Activity Manager not initialized.'
+        );
+        return undefined;
+      }
+
+      return activityManager.getLastActivity();
+    },
+
+    resetAll: async () => {
+      const { activityManager } = get();
+      if (!activityManager) {
+        console.error(
+          'Cannot reset activities: Activity Manager not initialized.'
+        );
+        return undefined;
+      }
+
+      await activityManager.resetAll();
+      set({ activities: activityManager.getActivities() });
     },
   }))
 );

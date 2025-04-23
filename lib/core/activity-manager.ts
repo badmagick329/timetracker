@@ -19,18 +19,26 @@ export class ActivityManager implements IActivitiesStorage {
     return this.storage.activities;
   }
 
-  public async addActivity(activity: Activity): Promise<string> {
+  async addActivity(activity: Activity): Promise<string> {
     return await this.storage.addActivity(activity);
   }
 
-  public async removeActivity(activityId: string): Promise<string | undefined> {
+  async removeActivity(activityId: string): Promise<string | undefined> {
     return await this.storage.removeActivity(activityId);
   }
   updateActivity(activity: Activity): Promise<boolean> {
     throw new Error('Method not implemented.');
   }
 
-  public getActivities(filters?: ActivityFilters): Activity[] {
+  getLastActivity(): Activity | undefined {
+    return this.storage.getLastActivity();
+  }
+
+  async resetAll(): Promise<void> {
+    await this.storage.resetAll();
+  }
+
+  getActivities(filters?: ActivityFilters): Activity[] {
     if (!filters) {
       return this.storage.activities;
     }
@@ -52,7 +60,7 @@ export class ActivityManager implements IActivitiesStorage {
     return filteredActivities;
   }
 
-  public static groupByLogicalDate(activities: Activity[]) {
+  static groupByLogicalDate(activities: Activity[]) {
     const grouped: { [key: string]: Activity[] } = {};
 
     activities.forEach((activity) => {
@@ -66,7 +74,7 @@ export class ActivityManager implements IActivitiesStorage {
     return grouped;
   }
 
-  public getTotalDuration(filters?: ActivityFilters): number {
+  getTotalDuration(filters?: ActivityFilters): number {
     return this.getActivities(filters).reduce(
       (total, activity) => total + activity.duration,
       0
