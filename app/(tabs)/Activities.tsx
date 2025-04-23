@@ -1,20 +1,17 @@
 import { Text } from '@/components/ui/text';
 import { Activity } from '@/lib/core/activity';
 import { ActivityManager } from '@/lib/core/activity-manager';
-import { useStore } from '@/store/useStore';
+import { useActivityStore } from '@/store/useActivityStore';
 import { useMemo } from 'react';
 import { View } from 'react-native';
 
 export default function Activities() {
-  const { activities: activitiesFromContext, isLoadingActivities } = useStore();
+  const activitiesFromStore = useActivityStore((state) => state.activities);
+  const isLoadingActivities = useActivityStore((state) => state.isLoading);
 
   const activities = useMemo(() => {
-    if (!activitiesFromContext) {
-      return undefined; // Should not happen if initialized correctly in useActivities
-    }
-
-    return ActivityManager.groupByLogicalDate(activitiesFromContext);
-  }, [activitiesFromContext]);
+    return ActivityManager.groupByLogicalDate(activitiesFromStore);
+  }, [activitiesFromStore]);
 
   if (isLoadingActivities) {
     return (

@@ -8,12 +8,12 @@ import {
 } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import * as React from 'react';
+import { useRef, useState, useEffect, useLayoutEffect } from 'react';
 import { Platform } from 'react-native';
 import { NAV_THEME } from '@/lib/constants';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { PortalHost } from '@rn-primitives/portal';
-import { StoreProvider } from '@/store/useStore';
+import { useActivityStore } from '@/store/useActivityStore';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
@@ -30,9 +30,10 @@ export {
 } from 'expo-router';
 
 export default function RootLayout() {
-  const hasMounted = React.useRef(false);
+  const hasMounted = useRef(false);
   const { colorScheme, isDarkColorScheme } = useColorScheme();
-  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = React.useState(false);
+  const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
+  const initialize = useActivityStore((state) => state.initialize);
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
@@ -47,24 +48,26 @@ export default function RootLayout() {
     hasMounted.current = true;
   }, []);
 
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
   if (!isColorSchemeLoaded) {
     return null;
   }
 
   return (
     <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-      <StoreProvider>
-        <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
-        <Stack>
-          <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
-        </Stack>
-        <PortalHost />
-      </StoreProvider>
+      <StatusBar style={isDarkColorScheme ? 'light' : 'dark'} />
+      <Stack>
+        <Stack.Screen name='(tabs)' options={{ headerShown: false }} />
+      </Stack>
+      <PortalHost />
     </ThemeProvider>
   );
 }
 
 const useIsomorphicLayoutEffect =
   Platform.OS === 'web' && typeof window === 'undefined'
-    ? React.useEffect
-    : React.useLayoutEffect;
+    ? useEffect
+    : useLayoutEffect;

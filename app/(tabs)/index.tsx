@@ -6,8 +6,8 @@ import CategoryPicker from '@/components/home/CategoryPicker';
 import { DisplayedCategory } from '@/lib/types';
 import { useState } from 'react';
 import ElapsedTime from '@/components/home/ElapasedTime';
-import { useStore } from '@/store/useStore';
 import { useTimerStore } from '@/store/useTimerStore';
+import { useActivityStore } from '@/store/useActivityStore';
 
 const testCategories: DisplayedCategory[] = [
   {
@@ -28,7 +28,7 @@ export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<
     DisplayedCategory | undefined
   >(undefined);
-  const { createActivity } = useStore();
+  const createActivity = useActivityStore((state) => state.createActivity);
   const startTime = useTimerStore((state) => state.startTime);
   const endTime = useTimerStore((state) => state.endTime);
   const startTimer = useTimerStore((state) => state.startTimer);
