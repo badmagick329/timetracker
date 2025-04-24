@@ -14,7 +14,7 @@ type CategoryState = {
 type CategoryActions = {
   initialize: (repository: ICategoriesRepository) => Promise<void>;
   createCategory: (categoryName: string) => Promise<Category | undefined>;
-  removeCategory: (category: Category) => Promise<string | undefined>;
+  removeCategory: (categoryId: string) => Promise<string | undefined>;
   getAllCategories: () => Category[];
   getCategory: (categoryId: string) => Category | undefined;
 };
@@ -79,7 +79,7 @@ export const useCategoryStore = create(
       }
     },
 
-    removeCategory: async (category: Category) => {
+    removeCategory: async (categoryId: string) => {
       const { categoriesRepository } = get();
       if (!categoriesRepository) {
         console.error(
@@ -88,9 +88,7 @@ export const useCategoryStore = create(
         return undefined;
       }
       try {
-        const removedId = await categoriesRepository.removeCategory(
-          category.id
-        );
+        const removedId = await categoriesRepository.removeCategory(categoryId);
         if (removedId) {
           set({ categories: [...categoriesRepository.categories] });
         }
