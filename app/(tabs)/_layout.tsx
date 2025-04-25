@@ -1,7 +1,7 @@
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-export default function Tablayout() {
+export default function MainTabsLayout() {
   return (
     <Tabs>
       <Tabs.Screen
@@ -47,6 +47,7 @@ export default function Tablayout() {
           ),
         }}
       />
+      <Tabs.Screen name='CategoryPage' options={{ href: null }} />
     </Tabs>
   );
 }
