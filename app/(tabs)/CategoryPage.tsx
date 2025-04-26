@@ -54,13 +54,13 @@ export default function CategoryPage() {
             onPress={async () => {
               try {
                 setIoInProgress(true);
-                await createCategory(categoryText);
+                await createCategory(categoryText.trim());
                 setCategoryText('');
               } finally {
                 setIoInProgress(false);
               }
             }}
-            disabled={ioInProgress}
+            disabled={ioInProgress || categoryText.trim() === ''}
           >
             <Text>Add</Text>
           </Button>
@@ -74,7 +74,7 @@ export default function CategoryPage() {
               }
             }}
             variant={'destructive'}
-            disabled={ioInProgress}
+            disabled={ioInProgress || categories.length === 0}
           >
             <Text>RESET ALL</Text>
           </Button>
