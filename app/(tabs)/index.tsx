@@ -22,6 +22,7 @@ export default function Index() {
   const getLastActivity = useActivityStore((state) => state.getLastActivity);
   const categories = useCategoryStore((state) => state.categories);
   const getCategory = useCategoryStore((state) => state.getCategory);
+  const [ioInProgress, setIoInProgress] = useState(false);
 
   const handleStart = () => {
     const newTime = startTimer();
@@ -35,21 +36,26 @@ export default function Index() {
       console.log('No category selected');
       return;
     }
-    customStart && startTimer(customStart);
+    try {
+      setIoInProgress(true);
+      customStart && startTimer(customStart);
 
-    const newTime = endTimer();
-    if (!newTime) {
-      console.log('No end time available');
-      return;
+      const newTime = endTimer();
+      if (!newTime) {
+        console.log('No end time available');
+        return;
+      }
+
+      console.log(`Ending ${selectedCategory}`);
+
+      await createActivity({
+        startTime: customStart || startTime!,
+        endTime: newTime,
+        category: selectedCategory,
+      });
+    } finally {
+      setIoInProgress(false);
     }
-
-    console.log(`Ending ${selectedCategory}`);
-
-    await createActivity({
-      startTime: customStart || startTime!,
-      endTime: newTime,
-      category: selectedCategory,
-    });
   };
 
   const canStart = startTime === undefined && endTime === undefined;
@@ -69,7 +75,7 @@ export default function Index() {
           <Button
             className='w-32'
             size={'lg'}
-            disabled={!selectedCategory || !canStart}
+            disabled={!selectedCategory || !canStart || ioInProgress}
             onPress={handleStart}
           >
             <Text>Start</Text>
@@ -78,7 +84,7 @@ export default function Index() {
             className='w-32'
             size={'lg'}
             variant={'destructive'}
-            disabled={!canEnd || !selectedCategory}
+            disabled={!canEnd || !selectedCategory || ioInProgress}
             onPress={() => handleEnd()}
           >
             <Text>End</Text>
@@ -89,18 +95,23 @@ export default function Index() {
             className='w-72'
             size='lg'
             variant={'accent'}
-            disabled={!canStart || !selectedCategory || !getLastActivity()}
-            onPress={() => {
+            disabled={
+              !canStart ||
+              !selectedCategory ||
+              !getLastActivity() ||
+              ioInProgress
+            }
+            onPress={async () => {
               const lastActivity = getLastActivity();
 
               if (lastActivity && lastActivity.end) {
                 console.log('Last Activity:', lastActivity);
-                handleEnd(lastActivity.end);
+                await handleEnd(lastActivity.end);
               } else {
                 console.log(
                   'No last activity found or start time is undefined'
                 );
-                handleEnd();
+                await handleEnd();
               }
             }}
           >

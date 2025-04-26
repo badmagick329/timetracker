@@ -11,6 +11,7 @@ export default function CategoryPage() {
   const [categoryText, setCategoryText] = useState('');
   const categories = useCategoryStore((state) => state.categories);
   const resetCategories = useCategoryStore((state) => state.reset);
+  const [ioInProgress, setIoInProgress] = useState(false);
 
   const isInitialized = useCategoryStore((state) => state.isInitialized);
   if (!isInitialized) {
@@ -24,9 +25,15 @@ export default function CategoryPage() {
           <View key={c.id}>
             <Text>{c.name}</Text>
             <Button
-              onPress={() => {
-                removeCategory(c.id);
+              onPress={async () => {
+                try {
+                  setIoInProgress(true);
+                  await removeCategory(c.id);
+                } finally {
+                  setIoInProgress(false);
+                }
               }}
+              disabled={ioInProgress}
             >
               <Text>Delete</Text>
             </Button>
@@ -44,18 +51,30 @@ export default function CategoryPage() {
         />
         <View className='flex flex-col gap-4'>
           <Button
-            onPress={() => {
-              createCategory(categoryText);
-              setCategoryText('');
+            onPress={async () => {
+              try {
+                setIoInProgress(true);
+                await createCategory(categoryText);
+                setCategoryText('');
+              } finally {
+                setIoInProgress(false);
+              }
             }}
+            disabled={ioInProgress}
           >
             <Text>Add</Text>
           </Button>
           <Button
-            onPress={() => {
-              resetCategories();
+            onPress={async () => {
+              try {
+                setIoInProgress(true);
+                await resetCategories();
+              } finally {
+                setIoInProgress(false);
+              }
             }}
             variant={'destructive'}
+            disabled={ioInProgress}
           >
             <Text>RESET ALL</Text>
           </Button>
