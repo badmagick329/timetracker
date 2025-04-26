@@ -51,9 +51,9 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
     }
 
     this._categories.push(category);
+    category.id = CategoriesJsonStorage.toKey(category.name);
     console.log('Category added:', category);
     await this.save();
-    category.id = CategoriesJsonStorage.toKey(category.name);
     return category.id;
   }
 
