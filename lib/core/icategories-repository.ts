@@ -5,4 +5,5 @@ export interface ICategoriesRepository {
   addCategory(category: Category): Promise<string>;
   removeCategory(categoryId: string): Promise<string | undefined>;
   getCategory(categoryId: string): Category | undefined;
+  reset(): Promise<void>;
 }

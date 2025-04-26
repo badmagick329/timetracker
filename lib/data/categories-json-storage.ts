@@ -79,6 +79,11 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
     return category;
   }
 
+  async reset(): Promise<void> {
+    this._categories = [];
+    await this.save();
+  }
+
   private static async load(saveFile: string): Promise<Category[]> {
     const info = await FileSystem.getInfoAsync(saveFile);
     if (!info.exists) {

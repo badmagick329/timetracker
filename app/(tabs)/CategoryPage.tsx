@@ -7,10 +7,10 @@ import { View } from 'react-native';
 
 export default function CategoryPage() {
   const createCategory = useCategoryStore((state) => state.createCategory);
-  const getAllCategories = useCategoryStore((state) => state.getAllCategories);
   const removeCategory = useCategoryStore((state) => state.removeCategory);
   const [categoryText, setCategoryText] = useState('');
   const categories = useCategoryStore((state) => state.categories);
+  const resetCategories = useCategoryStore((state) => state.reset);
 
   const isInitialized = useCategoryStore((state) => state.isInitialized);
   if (!isInitialized) {
@@ -42,7 +42,7 @@ export default function CategoryPage() {
           aria-errormessage='inputError'
           className='border-solid border-2 border-cyan-400'
         />
-        <View>
+        <View className='flex flex-col gap-4'>
           <Button
             onPress={() => {
               createCategory(categoryText);
@@ -50,6 +50,14 @@ export default function CategoryPage() {
             }}
           >
             <Text>Add</Text>
+          </Button>
+          <Button
+            onPress={() => {
+              resetCategories();
+            }}
+            variant={'destructive'}
+          >
+            <Text>RESET ALL</Text>
           </Button>
         </View>
       </View>

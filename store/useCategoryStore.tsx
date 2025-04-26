@@ -15,8 +15,8 @@ type CategoryActions = {
   initialize: (repository: ICategoriesRepository) => Promise<void>;
   createCategory: (categoryName: string) => Promise<Category | undefined>;
   removeCategory: (categoryId: string) => Promise<string | undefined>;
-  getAllCategories: () => Category[];
   getCategory: (categoryId: string) => Category | undefined;
+  reset: () => Promise<void>;
 };
 
 const initialState: CategoryState = {
@@ -99,10 +99,6 @@ export const useCategoryStore = create(
       }
     },
 
-    getAllCategories: () => {
-      return get().categories;
-    },
-
     getCategory: (categoryId: string) => {
       const { categoriesRepository } = get();
       if (!categoriesRepository) {
@@ -117,6 +113,18 @@ export const useCategoryStore = create(
         console.error('Failed to get category:', error);
         return undefined;
       }
+    },
+
+    reset: async () => {
+      const { categoriesRepository } = get();
+      if (!categoriesRepository) {
+        console.error(
+          'Cannot reset categories: Categories Repository not initialized.'
+        );
+        return;
+      }
+      await categoriesRepository.reset();
+      set({ categories: [] });
     },
   }))
 );
