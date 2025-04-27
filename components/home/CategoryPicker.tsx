@@ -1,4 +1,7 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+
+import { DisplayedCategory } from '@/lib/types';
+
 import {
   Select,
   SelectContent,
@@ -8,9 +11,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { DisplayedCategory } from '@/lib/types';
+import { Text } from '@/components/ui/text';
+
 import { useTimerStore } from '@/store/useTimerStore';
-import { Text } from '../ui/text';
 
 export default function CategoryPicker({
   displayedCategories,
@@ -19,9 +22,7 @@ export default function CategoryPicker({
   displayedCategories: DisplayedCategory[];
   onValueChange: (option: DisplayedCategory | undefined) => void;
 }) {
-  const startTime = useTimerStore((state) => state.startTime);
-  const endTime = useTimerStore((state) => state.endTime);
-  const canStart = startTime === undefined && endTime === undefined;
+  const canStart = useTimerStore((state) => state.canStart);
 
   const insets = useSafeAreaInsets();
   const contentInsets = {
@@ -39,7 +40,7 @@ export default function CategoryPicker({
     <Select onValueChange={onValueChange}>
       <SelectTrigger
         className='w-[250px] bg-muted-foreground/20'
-        disabled={!canStart}
+        disabled={!canStart()}
       >
         <SelectValue
           className='text-foreground text-sm native:text-lg'

@@ -1,27 +1,34 @@
-import { View } from 'react-native';
 import '@/global.css';
+import { useState } from 'react';
+import { View } from 'react-native';
+
+import { Category } from '@/lib/core/category';
+
+import CategoryPicker from '@/components/home/CategoryPicker';
+import ElapsedTime from '@/components/home/ElapasedTime';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import CategoryPicker from '@/components/home/CategoryPicker';
-import { useState } from 'react';
-import ElapsedTime from '@/components/home/ElapasedTime';
-import { useTimerStore } from '@/store/useTimerStore';
+
 import { useActivityStore } from '@/store/useActivityStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
-import { Category } from '@/lib/core/category';
+import { useTimerStore } from '@/store/useTimerStore';
 
 export default function Index() {
   const [selectedCategory, setSelectedCategory] = useState<
     Category | undefined
   >(undefined);
   const createActivity = useActivityStore((state) => state.createActivity);
+  const getLastActivity = useActivityStore((state) => state.getLastActivity);
+
   const startTime = useTimerStore((state) => state.startTime);
-  const endTime = useTimerStore((state) => state.endTime);
+  const canStart = useTimerStore((state) => state.canStart);
+  const canEnd = useTimerStore((state) => state.canEnd);
   const startTimer = useTimerStore((state) => state.startTimer);
   const endTimer = useTimerStore((state) => state.endTimer);
-  const getLastActivity = useActivityStore((state) => state.getLastActivity);
+
   const categories = useCategoryStore((state) => state.categories);
   const getCategory = useCategoryStore((state) => state.getCategory);
+
   const [ioInProgress, setIoInProgress] = useState(false);
 
   const handleStart = () => {
@@ -58,8 +65,6 @@ export default function Index() {
     }
   };
 
-  const canStart = startTime === undefined && endTime === undefined;
-  const canEnd = startTime !== undefined && endTime === undefined;
   const displayedCategories = categories.map((c) => ({
     value: c.id,
     label: c.name,
@@ -75,7 +80,7 @@ export default function Index() {
           <Button
             className='w-32'
             size={'lg'}
-            disabled={!selectedCategory || !canStart || ioInProgress}
+            disabled={!selectedCategory || !canStart() || ioInProgress}
             onPress={handleStart}
           >
             <Text>Start</Text>
@@ -84,7 +89,7 @@ export default function Index() {
             className='w-32'
             size={'lg'}
             variant={'destructive'}
-            disabled={!canEnd || !selectedCategory || ioInProgress}
+            disabled={!canEnd() || !selectedCategory || ioInProgress}
             onPress={() => handleEnd()}
           >
             <Text>End</Text>
@@ -96,7 +101,7 @@ export default function Index() {
             size='lg'
             variant={'accent'}
             disabled={
-              !canStart ||
+              !canStart() ||
               !selectedCategory ||
               !getLastActivity() ||
               ioInProgress

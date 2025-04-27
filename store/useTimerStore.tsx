@@ -11,6 +11,8 @@ type TimerActions = {
   endTimer: () => Date | undefined;
   resetTimer: () => void;
   getDuration: () => number;
+  canStart: () => boolean;
+  canEnd: () => boolean;
 };
 
 export const useTimerStore = create(
@@ -54,6 +56,14 @@ export const useTimerStore = create(
           }
 
           return (endTime ?? new Date()).getTime() - startTime.getTime();
+        },
+        canStart: () => {
+          const { startTime, endTime } = get();
+          return startTime === undefined && endTime === undefined;
+        },
+        canEnd: () => {
+          const { startTime, endTime } = get();
+          return startTime !== undefined && endTime === undefined;
         },
       };
     }
