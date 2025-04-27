@@ -21,7 +21,18 @@
     "jsxSingleQuote": true,
     "tabWidth": 2,
     "useTabs": false,
-    "printWidth": 80
+    "printWidth": 80,
+    "importOrder": [
+      "^@/lib/(.*)$",
+      "^@/components/(.*)$",
+      "^@/store/(.*)$",
+      "^[./]"
+    ],
+    "importOrderSeparation": true,
+    "importOrderSortSpecifiers": true,
+    "plugins": [
+      "@trivago/prettier-plugin-sort-imports"
+    ]
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.2",
@@ -64,6 +75,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
+    "@trivago/prettier-plugin-sort-imports": "^5.2.2",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.3.0",
