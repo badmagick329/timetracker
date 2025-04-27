@@ -1,9 +1,9 @@
-import { Button } from '@/components/ui/button';
-import { Text } from '@/components/ui/text';
-import { Activity } from '@/lib/core/activity';
-import { useActivityStore } from '@/store/useActivityStore';
 import { useMemo } from 'react';
 import { View } from 'react-native';
+import { Activity } from '@/lib/core/activity';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { useActivityStore } from '@/store/useActivityStore';
 
 export default function ActivitiesPage() {
   const activitiesFromStore = useActivityStore((state) => state.activities);

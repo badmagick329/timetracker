@@ -1,14 +1,11 @@
 import '@/global.css';
 import { useState } from 'react';
 import { View } from 'react-native';
-
 import { Category } from '@/lib/core/category';
-
 import CategoryPicker from '@/components/home/CategoryPicker';
 import ElapsedTime from '@/components/home/ElapasedTime';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-
 import { useActivityStore } from '@/store/useActivityStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
 import { useTimerStore } from '@/store/useTimerStore';

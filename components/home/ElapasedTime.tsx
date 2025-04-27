@@ -1,9 +1,9 @@
-import { Text } from '@/components/ui/text';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Button } from '@/components/ui/button';
-import { useTimerStore } from '@/store/useTimerStore';
 import { Category } from '@/lib/core/category';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
+import { useTimerStore } from '@/store/useTimerStore';
 
 export default function ElapsedTime({
   category,

@@ -1,5 +1,5 @@
-import { DateOnly } from '@/lib/core/date-only';
 import { Category } from '@/lib/core/category';
+import { DateOnly } from '@/lib/core/date-only';
 
 export type DisplayedCategory = {
   value: string;

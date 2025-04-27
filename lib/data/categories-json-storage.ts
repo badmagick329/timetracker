@@ -1,6 +1,6 @@
+import * as FileSystem from 'expo-file-system';
 import { Category } from '@/lib/core/category';
 import { ICategoriesRepository } from '@/lib/core/icategories-repository';
-import * as FileSystem from 'expo-file-system';
 
 export class CategoriesJsonStorage implements ICategoriesRepository {
   private saveFile: string;

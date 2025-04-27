@@ -1,9 +1,9 @@
+import { useState } from 'react';
+import { View } from 'react-native';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
 import { useCategoryStore } from '@/store/useCategoryStore';
-import { useState } from 'react';
-import { View } from 'react-native';
 
 export default function CategoryPage() {
   const createCategory = useCategoryStore((state) => state.createCategory);

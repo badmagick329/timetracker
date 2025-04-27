@@ -1,9 +1,9 @@
-import { Activity } from '@/lib/core/activity';
-import { IActivitiesRepository } from '@/lib/core/iactivities-repository';
 import * as FileSystem from 'expo-file-system';
-import { Timespan } from '@/lib/core/timespan';
-import { DateOnly } from '@/lib/core/date-only';
+import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
+import { DateOnly } from '@/lib/core/date-only';
+import { IActivitiesRepository } from '@/lib/core/iactivities-repository';
+import { Timespan } from '@/lib/core/timespan';
 
 export class ActivitiesJsonStorage implements IActivitiesRepository {
   private saveFile: string;

@@ -1,7 +1,7 @@
 import { ActivityFilters } from '@/lib/types';
 import { Activity } from './activity';
-import { IActivitiesRepository } from './iactivities-repository';
 import { IActivitiesQueries } from './iactivities-queries';
+import { IActivitiesRepository } from './iactivities-repository';
 
 export class ActivityManager
   implements IActivitiesRepository, IActivitiesQueries

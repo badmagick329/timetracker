@@ -1,7 +1,5 @@
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import { DisplayedCategory } from '@/lib/types';
-
 import {
   Select,
   SelectContent,
@@ -12,7 +10,6 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
-
 import { useTimerStore } from '@/store/useTimerStore';
 
 export default function CategoryPicker({

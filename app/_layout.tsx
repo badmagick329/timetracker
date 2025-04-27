@@ -1,21 +1,20 @@
 import '@/global.css';
-
 import {
+  DarkTheme,
+  DefaultTheme,
   Theme,
   ThemeProvider,
-  DefaultTheme,
-  DarkTheme,
 } from '@react-navigation/native';
+import { PortalHost } from '@rn-primitives/portal';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useRef, useState, useEffect, useLayoutEffect } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { NAV_THEME } from '@/lib/constants';
+import { CategoriesJsonStorage } from '@/lib/data/categories-json-storage';
 import { useColorScheme } from '@/lib/useColorScheme';
-import { PortalHost } from '@rn-primitives/portal';
 import { useActivityStore } from '@/store/useActivityStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
-import { CategoriesJsonStorage } from '@/lib/data/categories-json-storage';
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,
