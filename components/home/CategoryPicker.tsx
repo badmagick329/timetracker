@@ -1,3 +1,4 @@
+import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DisplayedCategory } from '@/lib/types';
 import {
@@ -45,16 +46,17 @@ export default function CategoryPicker({
         />
       </SelectTrigger>
       <SelectContent insets={contentInsets} className='w-[250px]'>
-        <SelectGroup>
-          <SelectLabel>Categories</SelectLabel>
-          {displayedCategories.map((c) => {
-            return (
-              <SelectItem key={c.value} label={c.label} value={c.value}>
-                {c.label}
-              </SelectItem>
-            );
-          })}
-        </SelectGroup>
+        <ScrollView className='max-h-[25vh]'>
+          <SelectGroup>
+            {displayedCategories.map((c) => {
+              return (
+                <SelectItem key={c.value} label={c.label} value={c.value}>
+                  {c.label}
+                </SelectItem>
+              );
+            })}
+          </SelectGroup>
+        </ScrollView>
       </SelectContent>
     </Select>
   );

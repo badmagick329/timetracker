@@ -70,7 +70,18 @@ export default function Index() {
   return (
     <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
       <View className='flex justify-center items-center flex-row w-full'>
-        <ElapsedTime category={selectedCategory} />
+        <CategoryPicker
+          displayedCategories={displayedCategories}
+          onValueChange={(option) => {
+            console.log(`Value changed. ${JSON.stringify(option)}`);
+            if (!option?.value) {
+              console.log(`category with ${option?.value} not found`);
+              return;
+            }
+            const foundCategory = getCategory(option.value);
+            setSelectedCategory(foundCategory);
+          }}
+        />
       </View>
       <View className='flex justify-center items-center gap-8 flex-col w-full'>
         <View className='flex justify-center items-center gap-8 flex-row w-full'>
@@ -122,18 +133,7 @@ export default function Index() {
         </View>
       </View>
       <View className='flex justify-center items-center flex-row w-full'>
-        <CategoryPicker
-          displayedCategories={displayedCategories}
-          onValueChange={(option) => {
-            console.log(`Value changed. ${JSON.stringify(option)}`);
-            if (!option?.value) {
-              console.log(`category with ${option?.value} not found`);
-              return;
-            }
-            const foundCategory = getCategory(option.value);
-            setSelectedCategory(foundCategory);
-          }}
-        />
+        <ElapsedTime category={selectedCategory} />
       </View>
     </View>
   );

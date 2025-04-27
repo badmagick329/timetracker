@@ -50,6 +50,18 @@ export default function ElapsedTime({
 
   return (
     <View className='flex flex-col justify-center gap-24 w-full px-2'>
+      <View className='flex flex-row justify-center gap-4'>
+        <Text className='text-4xl font-bold'>{formattedDuration()}</Text>
+        <Button
+          disabled={!(startTime && endTime && duration > 0)}
+          onPress={() => {
+            setDuration(0);
+            resetTimer();
+          }}
+        >
+          <Text>Clear</Text>
+        </Button>
+      </View>
       <View className='flex flex-col justify-center gap-2 px-6'>
         <Text className='text-lg font-bold'>
           {category && startTime && `${category.name}`}
@@ -62,18 +74,6 @@ export default function ElapsedTime({
           {endTime &&
             `${endTime.toLocaleDateString()} ${endTime.toLocaleTimeString()} - Ended`}{' '}
         </Text>
-      </View>
-      <View className='flex flex-row justify-center gap-4'>
-        <Text className='text-4xl font-bold'>{formattedDuration()}</Text>
-        <Button
-          disabled={!(startTime && endTime && duration > 0)}
-          onPress={() => {
-            setDuration(0);
-            resetTimer();
-          }}
-        >
-          <Text>Clear</Text>
-        </Button>
       </View>
     </View>
   );
