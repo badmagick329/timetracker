@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { View } from 'react-native';
 import { Category } from '@/lib/core/category';
 import CategoryPicker from '@/components/home/CategoryPicker';
-import ElapsedTime from '@/components/home/ElapasedTime';
+import RecentActivityInfo from '@/components/home/RecentActivityInfo';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
@@ -69,44 +69,39 @@ export default function Index() {
 
   return (
     <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
-      <View className='flex justify-center items-center flex-row w-full'>
-        <CategoryPicker
-          displayedCategories={displayedCategories}
-          onValueChange={(option) => {
-            console.log(`Value changed. ${JSON.stringify(option)}`);
-            if (!option?.value) {
-              console.log(`category with ${option?.value} not found`);
-              return;
-            }
-            const foundCategory = getCategory(option.value);
-            setSelectedCategory(foundCategory);
-          }}
-        />
-      </View>
-      <View className='flex justify-center items-center gap-8 flex-col w-full'>
-        <View className='flex justify-center items-center gap-8 flex-row w-full'>
+      <View className='flex flex-col gap-12 w-full'>
+        <View className='flex justify-center items-center flex-row w-full gap-4'>
+          <CategoryPicker
+            displayedCategories={displayedCategories}
+            onValueChange={(option) => {
+              console.log(`Value changed. ${JSON.stringify(option)}`);
+              if (!option?.value) {
+                console.log(`category with ${option?.value} not found`);
+                return;
+              }
+              const foundCategory = getCategory(option.value);
+              setSelectedCategory(foundCategory);
+            }}
+          />
           <Button
-            className='w-32'
-            size={'lg'}
+            className='w-24'
             disabled={!selectedCategory || !canStart() || ioInProgress}
             onPress={handleStart}
           >
             <Text>Start</Text>
           </Button>
+        </View>
+        <View className='flex justify-center items-center gap-8 flex-row w-full'>
           <Button
-            className='w-32'
-            size={'lg'}
+            className='w-24'
             variant={'destructive'}
             disabled={!canEnd() || !selectedCategory || ioInProgress}
             onPress={() => handleEnd()}
           >
             <Text>End</Text>
           </Button>
-        </View>
-        <View className='flex justify-center items-center flex-row'>
           <Button
             className='w-72'
-            size='lg'
             variant={'accent'}
             disabled={
               !canStart() ||
@@ -133,7 +128,7 @@ export default function Index() {
         </View>
       </View>
       <View className='flex justify-center items-center flex-row w-full'>
-        <ElapsedTime category={selectedCategory} />
+        <RecentActivityInfo category={selectedCategory} />
       </View>
     </View>
   );
