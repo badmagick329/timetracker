@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import { Activity } from '@/lib/core/activity';
 import { formatTimeOnly } from '@/lib/utils/index';
 import { Button } from '@/components/ui/button';
@@ -33,7 +33,7 @@ export default function ActivitiesPage() {
   }
 
   return (
-    <View className='flex flex-1 flex-col items-center px-2 gap-8'>
+    <ScrollView className='flex flex-1 flex-col px-2 gap-8'>
       {Object.keys(activities).map((logicalDate) => (
         <View key={logicalDate} className='w-full'>
           <Text className='font-bold text-lg'>{logicalDate}</Text>
@@ -48,7 +48,7 @@ export default function ActivitiesPage() {
           <Text>RESET ALL</Text>
         </Button>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
