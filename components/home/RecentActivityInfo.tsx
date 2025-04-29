@@ -19,7 +19,9 @@ export function RecentActivityInfo({
   const getDuration = useTimerStore((state) => state.getDuration);
   const resetTimer = useTimerStore((state) => state.resetTimer);
 
-  const getLastActivity = useActivityStore((state) => state.getLastActivity);
+  const getLastActivity = useActivityStore(
+    (state) => state.getLastCompletedActivity
+  );
   const lastActivity = getLastActivity();
 
   useEffect(() => {

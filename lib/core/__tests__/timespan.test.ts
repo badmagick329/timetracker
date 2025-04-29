@@ -7,18 +7,32 @@ describe('Timespan', () => {
     const end = new Date('2025-04-17T12:00:00Z');
     const logicalDate = new DateOnly(new Date('2025-04-17'));
 
-    const timespan = Timespan.create(start, end, logicalDate);
+    const timespan = Timespan.create(start, logicalDate, end);
 
     expect(timespan).toBeInstanceOf(Timespan);
     expect(timespan.logicalDate).toBe(logicalDate);
+    expect(timespan.start).toBe(start);
+    expect(timespan.end).toBe(end);
   });
 
-  it('should calculate the correct duration in milliseconds', () => {
+  it('should create a timespan with undefined end time', () => {
+    const start = new Date('2025-04-17T10:00:00Z');
+    const logicalDate = new DateOnly(new Date('2025-04-17'));
+
+    const timespan = Timespan.create(start, logicalDate);
+
+    expect(timespan).toBeInstanceOf(Timespan);
+    expect(timespan.logicalDate).toBe(logicalDate);
+    expect(timespan.start).toBe(start);
+    expect(timespan.end).toBeUndefined();
+  });
+
+  it('should calculate the correct duration in milliseconds when end time is defined', () => {
     const start = new Date('2025-04-17T10:00:00Z');
     const end = new Date('2025-04-17T12:00:00Z');
     const logicalDate = new DateOnly(new Date('2025-04-17'));
 
-    const timespan = Timespan.create(start, end, logicalDate);
+    const timespan = Timespan.create(start, logicalDate, end);
 
     expect(timespan.duration).toBe(2 * 60 * 60 * 1000);
   });
@@ -29,7 +43,7 @@ describe('Timespan', () => {
     const logicalDate = new DateOnly(new Date('2025-04-17'));
 
     expect(() => {
-      Timespan.create(start, end, logicalDate);
+      Timespan.create(start, logicalDate, end);
     }).toThrow('Start date must be before end date');
   });
 
@@ -38,7 +52,7 @@ describe('Timespan', () => {
     const logicalDate = new DateOnly(new Date('2025-04-17'));
 
     expect(() => {
-      Timespan.create(sameDate, sameDate, logicalDate);
+      Timespan.create(sameDate, logicalDate, sameDate);
     }).toThrow('Start date must be before end date');
   });
 });

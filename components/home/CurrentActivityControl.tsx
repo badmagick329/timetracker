@@ -22,7 +22,9 @@ export function CurrentActivityControl({
   const [ioInProgress, setIoInProgress] = useState(false);
 
   const createActivity = useActivityStore((state) => state.createActivity);
-  const getLastActivity = useActivityStore((state) => state.getLastActivity);
+  const getLastActivity = useActivityStore(
+    (state) => state.getLastCompletedActivity
+  );
 
   const startTime = useTimerStore((state) => state.startTime);
   const canStart = useTimerStore((state) => state.canStart);

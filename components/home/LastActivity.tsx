@@ -8,6 +8,10 @@ export function LastActivity({ activity }: { activity?: Activity }) {
   if (!activity) {
     return null;
   }
+  if (activity.duration === undefined) {
+    console.error('Activity duration is undefined');
+    return null;
+  }
 
   return (
     <ActivityCard

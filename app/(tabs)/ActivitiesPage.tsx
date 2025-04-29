@@ -58,7 +58,9 @@ function ActivityCard({ activity }: { activity: Activity }) {
       <View className='flex flex-row gap-2'>
         <Text className='text-slate-400'>{formatTimeOnly(activity.start)}</Text>
         <Text className='text-slate-200'>-</Text>
-        <Text className='text-slate-200'>{formatTimeOnly(activity.end)}</Text>
+        <Text className='text-slate-200'>
+          {activity.end ? formatTimeOnly(activity.end) : '...'}
+        </Text>
       </View>
       <View>
         <Text>{activity.category.toString()}</Text>

@@ -8,11 +8,23 @@ export type DisplayedCategory = {
 
 export type CreateActivityParams = {
   startTime: Date;
-  endTime: Date;
   category: { id: string; name: string };
+  endTime?: Date;
 };
 
 export type ActivityFilters = {
   date?: DateOnly;
   category?: Category;
+  completedOnly?: boolean;
+};
+
+export type JsonParsedActivity = {
+  id: string;
+  timespan: {
+    start: string;
+    logicalDate: string;
+    end?: string;
+  };
+  category: { id: string; name: string };
+  summary: string;
 };

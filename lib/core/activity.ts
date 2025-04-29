@@ -52,6 +52,18 @@ export class Activity {
     return this.timespan.end;
   }
 
+  get isInProgress() {
+    return this.end === undefined;
+  }
+
+  completeActivity(endTime: Date) {
+    if (!this.isInProgress) {
+      console.error('Activity is already completed:', this);
+      throw new Error('Activity is already completed');
+    }
+    this.timespan.end = endTime;
+  }
+
   toString(): string {
     return `${this.timespan.start}__${this.timespan.end}__${this.category}__${this.summary}`;
   }

@@ -4,6 +4,7 @@ import { Category } from '@/lib/core/category';
 import { DateOnly } from '@/lib/core/date-only';
 import { IActivitiesRepository } from '@/lib/core/iactivities-repository';
 import { Timespan } from '@/lib/core/timespan';
+import { JsonParsedActivity } from '@/lib/types';
 
 export class ActivitiesJsonStorage implements IActivitiesRepository {
   private saveFile: string;
@@ -62,16 +63,6 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
     }
   }
 
-  getLastActivity(): Activity | undefined {
-    if (this.activities.length === 0) {
-      return undefined;
-    }
-
-    return this.activities.reduce((prev, current) => {
-      return prev.end > current.end ? prev : current;
-    });
-  }
-
   async resetAll(): Promise<void> {
     this._activities = [];
     try {
@@ -91,16 +82,7 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
     try {
       const fileContent = await FileSystem.readAsStringAsync(saveFile);
       console.log(`File contents read:\n${fileContent}`);
-      const activities = JSON.parse(fileContent) as {
-        id: string;
-        timespan: {
-          start: string;
-          end: string;
-          logicalDate: string;
-        };
-        category: { id: string; name: string };
-        summary: string;
-      }[];
+      const activities = JSON.parse(fileContent) as JsonParsedActivity[];
       console.log('parsed data', activities);
 
       const loaded = activities.map((activity) => {
@@ -109,8 +91,8 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
         const created = new Activity({
           timespan: Timespan.create(
             new Date(start),
-            new Date(end),
-            new DateOnly(new Date(logicalDate))
+            new DateOnly(new Date(logicalDate)),
+            end !== undefined ? new Date(end) : undefined
           ),
           category: Category.create(
             activity.category.name,
