@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { View } from 'react-native';
 import { Activity } from '@/lib/core/activity';
+import { formatTimeOnly } from '@/lib/utils/index';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
@@ -37,7 +38,7 @@ export default function ActivitiesPage() {
         <View key={logicalDate} className='w-full'>
           <Text className='font-bold text-lg'>{logicalDate}</Text>
           {activities[logicalDate].map((a) => (
-            <ActivityCard key={a.toString()} activity={a} />
+            <ActivityCard key={a.id} activity={a} />
           ))}
         </View>
       ))}
@@ -64,11 +65,4 @@ function ActivityCard({ activity }: { activity: Activity }) {
       </View>
     </View>
   );
-}
-
-function formatTimeOnly(date: Date): string {
-  return `${date.getHours().toString().padStart(2, '0')}:${date
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
 }

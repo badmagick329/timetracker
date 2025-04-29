@@ -13,7 +13,7 @@ import {
 import { Text } from '@/components/ui/text';
 import { useTimerStore } from '@/store/useTimerStore';
 
-export default function CategoryPicker({
+export function CategoryPicker({
   displayedCategories,
   onValueChange,
 }: {

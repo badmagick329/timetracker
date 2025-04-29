@@ -27,9 +27,12 @@ export function formattedDuration2(duration: number) {
   const hourString = hours > 0 ? `${hours.toString().padStart(2, '0')}h` : '';
   const minutesString =
     minutes > 0 || hours ? `${minutes.toString().padStart(2, '0')}m` : '';
-  const secondsString =
-    seconds > 0 || hours || minutes
-      ? `${seconds.toString().padStart(2, '0')}s`
-      : '';
+  const secondsString = `${seconds.toString().padStart(2, '0')}s`;
   return `${hourString} ${minutesString} ${secondsString}`.trim();
+}
+export function formatTimeOnly(date: Date): string {
+  return `${date.getHours().toString().padStart(2, '0')}:${date
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
 }
