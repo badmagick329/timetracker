@@ -1,23 +1,32 @@
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import { Category } from '@/lib/core/category';
 import { formattedDuration2, titleCase } from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Text } from '@/components/ui/text';
+import { useActivityStore } from '@/store/useActivityStore';
 
-export function CurrentActivity({
-  category,
-  startTime,
-  endTime,
-  duration,
-}: {
-  category?: Category;
-  startTime?: Date;
-  endTime?: Date;
-  duration: number;
-}) {
-  // if not in progress
-  if (!startTime || endTime || !category) {
+export function CurrentActivity() {
+  const [duration, setDuration] = useState(0); // in milliseconds
+  const activityInProgress = useActivityStore(
+    (state) => state.activityInProgress
+  );
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (activityInProgress) {
+      interval = setInterval(() => {
+        setDuration(activityInProgress.duration);
+      }, 100);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [activityInProgress]);
+
+  if (!activityInProgress) {
     const showPlaceholder = false;
     return showPlaceholder ? (
       <ActivityCard
@@ -45,7 +54,9 @@ export function CurrentActivity({
     <ActivityCard
       header={
         <>
-          <Text className='text-xl font-bold'>{titleCase(category.name)}</Text>
+          <Text className='text-xl font-bold'>
+            {titleCase(activityInProgress.category.name)}
+          </Text>
           <Text className='text-sm text-muted-foreground'>
             {formattedDuration2(duration)}
           </Text>
@@ -56,7 +67,7 @@ export function CurrentActivity({
           endTimeEmptyContent={
             <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/40 bg-destructive/20'></View>
           }
-          startTime={startTime}
+          startTime={activityInProgress.start}
         />
       }
     />

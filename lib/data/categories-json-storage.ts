@@ -101,7 +101,7 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
       const loaded = categoriesData.map((catData) => {
         return Category.create(catData.name, catData.id);
       });
-      console.log(`Loaded ${loaded.length} categories`);
+      // console.log(`Loaded ${loaded.length} categories`);
 
       return loaded;
     } catch (error) {

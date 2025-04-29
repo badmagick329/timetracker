@@ -81,9 +81,9 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
 
     try {
       const fileContent = await FileSystem.readAsStringAsync(saveFile);
-      console.log(`File contents read:\n${fileContent}`);
+      // console.log(`File contents read:\n${fileContent}`);
       const activities = JSON.parse(fileContent) as JsonParsedActivity[];
-      console.log('parsed data', activities);
+      // console.log('parsed data', activities);
 
       const loaded = activities.map((activity) => {
         const { start, end, logicalDate } = activity.timespan;
@@ -92,7 +92,7 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
           timespan: Timespan.create(
             new Date(start),
             new DateOnly(new Date(logicalDate)),
-            end !== undefined ? new Date(end) : undefined
+            end !== '' ? new Date(end) : undefined
           ),
           category: Category.create(
             activity.category.name,

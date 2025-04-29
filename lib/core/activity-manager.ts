@@ -40,7 +40,9 @@ export class ActivityManager
       );
     }
     const createdId = await this.storage.addActivity(activity);
-    this._activityInProgress = activity;
+    if (activity.end === undefined) {
+      this._activityInProgress = activity;
+    }
     return createdId;
   }
 

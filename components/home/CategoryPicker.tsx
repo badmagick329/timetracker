@@ -1,26 +1,49 @@
+import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Category } from '@/lib/core/category';
 import { DisplayedCategory } from '@/lib/types';
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
 import { Text } from '@/components/ui/text';
-import { useTimerStore } from '@/store/useTimerStore';
+import { useActivityStore } from '@/store/useActivityStore';
 
 export function CategoryPicker({
   displayedCategories,
   onValueChange,
+  selectedCategory,
 }: {
   displayedCategories: DisplayedCategory[];
   onValueChange: (option: DisplayedCategory | undefined) => void;
+  selectedCategory?: Category;
 }) {
-  const canStart = useTimerStore((state) => state.canStart);
+  const [selectedDisplayedCategory, setSelectedDisplayedCategory] = useState<
+    DisplayedCategory | undefined
+  >(undefined);
+  const activityInProgress = useActivityStore(
+    (state) => state.activityInProgress
+  );
+  const canStart = activityInProgress === undefined;
+
+  useEffect(() => {
+    const match = displayedCategories.find(
+      (c) => c.value === selectedCategory?.id
+    );
+    if (match) {
+      setSelectedDisplayedCategory(match);
+    } else {
+      setSelectedDisplayedCategory({
+        label: 'Select a category',
+        value: '',
+      });
+    }
+  }, [selectedCategory, displayedCategories]);
 
   const insets = useSafeAreaInsets();
   const contentInsets = {
@@ -35,10 +58,10 @@ export function CategoryPicker({
   }
 
   return (
-    <Select onValueChange={onValueChange}>
+    <Select onValueChange={onValueChange} value={selectedDisplayedCategory}>
       <SelectTrigger
         className='w-[250px] bg-muted-foreground/20'
-        disabled={!canStart()}
+        disabled={!canStart}
       >
         <SelectValue
           className='native:text-lg text-sm text-foreground'

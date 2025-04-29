@@ -12,6 +12,7 @@ type ActivityState = {
   activityManager: ActivityManager | undefined;
   activities: Activity[];
   activityInProgress: Activity | undefined;
+  lastCompletedActivity: Activity | undefined;
   isLoading: boolean;
   isInitialized: boolean;
   error: string | null;
@@ -24,7 +25,6 @@ type ActivityActions = {
   ) => Promise<Activity | undefined>;
   completeActivity: (endTime: Date) => Promise<string | undefined>;
   removeActivity: (activity: Activity) => Promise<string | undefined>;
-  getLastCompletedActivity: () => Activity | undefined;
   resetAll: () => Promise<void>;
   groupByLogicalDate: () => { [key: string]: Activity[] } | undefined;
 };
@@ -33,6 +33,7 @@ const initialState: ActivityState = {
   activityManager: undefined,
   activities: [],
   activityInProgress: undefined,
+  lastCompletedActivity: undefined,
   isLoading: false,
   isInitialized: false,
   error: null,
@@ -54,6 +55,7 @@ export const useActivityStore = create(
         set({
           activityManager: manager,
           activities: manager.getActivities(),
+          lastCompletedActivity: manager.getLastCompletedActivity(),
           activityInProgress: manager.activityInProgress,
           isLoading: false,
           isInitialized: true,
@@ -65,6 +67,7 @@ export const useActivityStore = create(
           activityManager: undefined,
           activities: [],
           activityInProgress: undefined,
+          lastCompletedActivity: undefined,
           isLoading: false,
           isInitialized: true,
           error:
@@ -74,8 +77,8 @@ export const useActivityStore = create(
     },
 
     createActivity: async ({ startTime, category, endTime }) => {
-      const { activityManager } = get();
-      if (!activityManager) {
+      const { activityManager: manager } = get();
+      if (!manager) {
         console.log(
           'Cannot create activity: Activity Manager not initialized.'
         );
@@ -88,12 +91,13 @@ export const useActivityStore = create(
           timespan: Timespan.create(startTime, logicalDate, endTime),
           category: Category.create(category.name, category.id),
         });
-        await activityManager.addActivity(activity);
+        await manager.addActivity(activity);
         console.log('Activity added:', activity);
 
         set({
-          activities: [...activityManager.getActivities()],
-          activityInProgress: activityManager.activityInProgress,
+          activities: [...manager.getActivities()],
+          activityInProgress: manager.activityInProgress,
+          lastCompletedActivity: manager.getLastCompletedActivity(),
         });
         return activity;
       } catch (error) {
@@ -103,37 +107,37 @@ export const useActivityStore = create(
     },
 
     completeActivity: async (endTime: Date) => {
-      const { activityManager } = get();
-      if (!activityManager) {
+      const { activityManager: manager } = get();
+      if (!manager) {
         console.log(
           'Cannot complete activity: Activity Manager not initialized.'
         );
         return undefined;
       }
 
-      const completedId = await activityManager.completeActivity(endTime);
+      const completedId = await manager.completeActivity(endTime);
       set({
-        activityInProgress: activityManager.activityInProgress,
+        activityInProgress: manager.activityInProgress,
+        lastCompletedActivity: manager.getLastCompletedActivity(),
       });
       return completedId;
     },
 
     removeActivity: async (activity: Activity) => {
-      const { activityManager } = get();
-      if (!activityManager) {
+      const { activityManager: manager } = get();
+      if (!manager) {
         console.log(
           'Cannot remove activity: Activity Manager not initialized.'
         );
         return undefined;
       }
       try {
-        const removed = await activityManager.removeActivity(
-          activity.toString()
-        );
+        const removed = await manager.removeActivity(activity.toString());
         if (removed) {
           set({
-            activities: [...activityManager.getActivities()],
-            activityInProgress: activityManager.activityInProgress,
+            activities: [...manager.getActivities()],
+            activityInProgress: manager.activityInProgress,
+            lastCompletedActivity: manager.getLastCompletedActivity(),
           });
         }
         return activity.toString();
@@ -143,43 +147,31 @@ export const useActivityStore = create(
       }
     },
 
-    getLastCompletedActivity: () => {
-      const { activityManager } = get();
-      if (!activityManager) {
-        console.log(
-          'Cannot get last activity: Activity Manager not initialized.'
-        );
-        return undefined;
-      }
-
-      return activityManager.getLastCompletedActivity();
-    },
-
     resetAll: async () => {
-      const { activityManager } = get();
-      if (!activityManager) {
+      const { activityManager: manager } = get();
+      if (!manager) {
         console.log(
           'Cannot reset activities: Activity Manager not initialized.'
         );
         return undefined;
       }
 
-      await activityManager.resetAll();
+      await manager.resetAll();
       set({
-        activities: [...activityManager.getActivities()],
-        activityInProgress: activityManager.activityInProgress,
+        activities: [...manager.getActivities()],
+        activityInProgress: manager.activityInProgress,
       });
     },
     groupByLogicalDate: () => {
-      const { activityManager } = get();
-      if (!activityManager) {
+      const { activityManager: manager } = get();
+      if (!manager) {
         console.log(
           'Cannot group activities: Activity Manager not initialized.'
         );
         return undefined;
       }
 
-      return activityManager.groupByLogicalDate();
+      return manager.groupByLogicalDate();
     },
   }))
 );

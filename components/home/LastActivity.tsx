@@ -1,13 +1,16 @@
-import { Activity } from '@/lib/core/activity';
 import { formattedDuration2, titleCase } from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Text } from '@/components/ui/text';
+import { useActivityStore } from '@/store/useActivityStore';
 
-export function LastActivity({ activity }: { activity?: Activity }) {
+export function LastActivity() {
+  const activity = useActivityStore((state) => state.lastCompletedActivity);
+
   if (!activity) {
     return null;
   }
+
   if (activity.duration === undefined) {
     console.error('Activity duration is undefined');
     return null;

@@ -23,7 +23,7 @@ export type JsonParsedActivity = {
   timespan: {
     start: string;
     logicalDate: string;
-    end?: string;
+    end: string;
   };
   category: { id: string; name: string };
   summary: string;

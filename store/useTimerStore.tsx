@@ -15,7 +15,7 @@ type TimerActions = {
   canEnd: () => boolean;
 };
 
-export const useTimerStore = create(
+const useTimerStore = create(
   combine<TimerState, TimerActions>(
     {
       startTime: undefined as Date | undefined,
