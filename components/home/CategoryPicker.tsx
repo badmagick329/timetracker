@@ -41,7 +41,7 @@ export function CategoryPicker({
         disabled={!canStart()}
       >
         <SelectValue
-          className='text-foreground text-sm native:text-lg'
+          className='native:text-lg text-sm text-foreground'
           placeholder='Select a category'
         />
       </SelectTrigger>

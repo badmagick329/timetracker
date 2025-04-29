@@ -94,8 +94,8 @@ export function CurrentActivityControl({
   }));
 
   return (
-    <View className='flex flex-col gap-12 w-full'>
-      <View className='flex justify-center items-center flex-row w-full gap-4'>
+    <View className='flex w-full flex-col gap-12'>
+      <View className='flex w-full flex-row items-center justify-center gap-4'>
         <CategoryPicker
           displayedCategories={displayedCategories}
           onValueChange={onCategoryValueChange}
@@ -108,7 +108,7 @@ export function CurrentActivityControl({
           <Text>Start</Text>
         </Button>
       </View>
-      <View className='flex justify-center items-center gap-8 flex-row w-full'>
+      <View className='flex w-full flex-row items-center justify-center gap-8'>
         <Button
           className='w-24'
           variant={'destructive'}

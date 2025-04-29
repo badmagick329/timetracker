@@ -3,7 +3,7 @@ import { View } from 'react-native';
 
 export default function SettingsPage() {
   return (
-    <View className='flex flex-col w-full flex-1 gap-2'>
+    <View className='flex w-full flex-1 flex-col gap-2'>
       <SettingLink href='/CategoryPage' label='Category Picker' />
     </View>
   );
@@ -19,7 +19,7 @@ function SettingLink({
   return (
     <Link
       href={href}
-      className='text-foreground bg-primary/20 px-8 py-4 text-center rounded-md w-full'
+      className='w-full rounded-md bg-primary/20 px-8 py-4 text-center text-foreground'
     >
       {label}
     </Link>

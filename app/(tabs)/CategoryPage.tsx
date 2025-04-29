@@ -19,7 +19,7 @@ export default function CategoryPage() {
   }
 
   return (
-    <View className='flex flex-col w-full flex-1 gap-2'>
+    <View className='flex w-full flex-1 flex-col gap-2'>
       {categories.map((c) => {
         return (
           <View key={c.id}>
@@ -40,14 +40,14 @@ export default function CategoryPage() {
           </View>
         );
       })}
-      <View className='flex flex-col w-full pt-8 gap-4'>
+      <View className='flex w-full flex-col gap-4 pt-8'>
         <Input
           placeholder='Write some stuff...'
           value={categoryText}
           onChangeText={setCategoryText}
           aria-labelledby='inputLabel'
           aria-errormessage='inputError'
-          className='border-solid border-2 border-cyan-400'
+          className='border-2 border-solid border-cyan-400'
         />
         <View className='flex flex-col gap-4'>
           <Button

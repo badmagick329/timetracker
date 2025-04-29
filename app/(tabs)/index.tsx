@@ -11,7 +11,7 @@ export default function Index() {
   >(undefined);
 
   return (
-    <View className='flex pt-8 items-center flex-1 bg-background flex-col gap-24'>
+    <View className='flex flex-1 flex-col items-center gap-24 bg-background pt-8'>
       <CurrentActivityControl
         setSelectedCategory={setSelectedCategory}
         selectedCategory={selectedCategory}

@@ -15,13 +15,13 @@ export function ActivityCard({
   return (
     <View
       className={clsx(
-        'flex flex-col gap-8 border-white/40 border-2 rounded-lg px-4 pt-2 pb-6 w-full',
+        'flex w-full flex-col gap-8 rounded-lg border-2 border-white/40 px-4 pb-6 pt-2',
         cardClassName
       )}
     >
       <View
         className={clsx(
-          'flex flex-row w-full border-b-2 border-white items-center gap-4 justify-between',
+          'flex w-full flex-row items-center justify-between gap-4 border-b-2 border-white',
           headerClassName
         )}
       >

@@ -32,7 +32,7 @@ export function CurrentActivity({
         content={
           <ActivityBar
             endTimeEmptyContent={
-              <View className='w-5 h-5 border-destructive/40 border-2 animate-bounce rounded-full bg-destructive/20'></View>
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/40 bg-destructive/20'></View>
             }
             startTime={new Date()}
           />
@@ -54,7 +54,7 @@ export function CurrentActivity({
       content={
         <ActivityBar
           endTimeEmptyContent={
-            <View className='w-5 h-5 border-destructive/40 border-2 animate-bounce rounded-full bg-destructive/20'></View>
+            <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/40 bg-destructive/20'></View>
           }
           startTime={startTime}
         />

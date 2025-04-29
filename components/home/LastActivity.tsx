@@ -13,10 +13,10 @@ export function LastActivity({ activity }: { activity?: Activity }) {
     <ActivityCard
       header={
         <>
-          <Text className='font-bold text-xl'>
+          <Text className='text-xl font-bold'>
             {titleCase(activity.category.name)}
           </Text>
-          <Text className='font-bold text-sm text-muted-foreground'>
+          <Text className='text-sm font-bold text-muted-foreground'>
             {formattedDuration2(activity.duration)}
           </Text>
         </>
