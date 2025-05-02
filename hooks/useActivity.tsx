@@ -49,5 +49,6 @@ export function useActivity() {
     selectedCategory,
     setSelectedCategory,
     lastCompletedActivity,
+    activityInProgress,
   };
 }

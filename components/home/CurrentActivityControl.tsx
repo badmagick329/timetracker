@@ -5,6 +5,7 @@ import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
 import { CreateActivityParams, DisplayedCategory } from '@/lib/types';
 import { CategoryPicker } from '@/components/home/CategoryPicker';
+import { MorphingButton } from '@/components/ui/MorphingButton';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useCategoryStore } from '@/store/useCategoryStore';
@@ -23,6 +24,7 @@ export function CurrentActivityControl() {
     createActivity,
     completeActivity,
     lastCompletedActivity,
+    activityInProgress,
   } = useActivity();
 
   const handleStart = initializeActivity(
@@ -73,13 +75,14 @@ export function CurrentActivityControl() {
           onValueChange={onCategoryValueChange}
           selectedCategory={selectedCategory}
         />
-        <Button
+        <MorphingButton
+          rounded={activityInProgress !== undefined}
           className='w-24'
           disabled={!canStart || ioInProgress}
           onPress={handleStart}
         >
           <Text>Start</Text>
-        </Button>
+        </MorphingButton>
       </View>
       <View className='flex w-full flex-row items-center justify-center gap-8'>
         <Button
