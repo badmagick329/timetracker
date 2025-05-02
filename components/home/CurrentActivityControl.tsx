@@ -1,11 +1,11 @@
 import { useActivity } from '@/hooks/useActivity';
 import { useState } from 'react';
 import { View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
 import { CreateActivityParams, DisplayedCategory } from '@/lib/types';
 import { CategoryPicker } from '@/components/home/CategoryPicker';
-import { MorphingButton } from '@/components/ui/MorphingButton';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useCategoryStore } from '@/store/useCategoryStore';
@@ -75,14 +75,13 @@ export function CurrentActivityControl() {
           onValueChange={onCategoryValueChange}
           selectedCategory={selectedCategory}
         />
-        <MorphingButton
-          rounded={activityInProgress !== undefined}
+        <Button
           className='w-24'
           disabled={!canStart || ioInProgress}
           onPress={handleStart}
         >
           <Text>Start</Text>
-        </MorphingButton>
+        </Button>
       </View>
       <View className='flex w-full flex-row items-center justify-center gap-8'>
         <Button
@@ -179,3 +178,15 @@ function initializeActivity(
     }
   };
 }
+
+const styles = StyleSheet.create({
+  container: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'red',
+    paddingVertical: 15,
+    marginVertical: 10,
+    borderRadius: 10,
+    width: 200,
+  },
+});

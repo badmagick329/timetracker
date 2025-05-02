@@ -59,6 +59,7 @@
     "expo-system-ui": "~4.0.9",
     "expo-web-browser": "~14.0.2",
     "lucide-react-native": "^0.488.0",
+    "moti": "^0.30.0",
     "nativewind": "^4.1.23",
     "react": "18.3.1",
     "react-dom": "18.3.1",
@@ -88,5 +89,8 @@
     "react-test-renderer": "18.3.1",
     "typescript": "^5.3.3"
   },
-  "private": true
+  "private": true,
+  "trustedDependencies": [
+    "react-native-micro-interactions"
+  ]
 }
