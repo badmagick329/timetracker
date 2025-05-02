@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Activity } from '@/lib/core/activity';
 import { formatTimeOnly } from '@/lib/utils/index';
@@ -7,14 +6,9 @@ import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
 export default function ActivitiesPage() {
-  const activitiesFromStore = useActivityStore((state) => state.activities);
+  const activities = useActivityStore((state) => state.activitiesByDate);
   const isLoadingActivities = useActivityStore((state) => state.isLoading);
-  const groupByLogicalDate = useActivityStore(
-    (state) => state.groupByLogicalDate
-  );
   const resetAll = useActivityStore((state) => state.resetAll);
-
-  const activities = useMemo(() => groupByLogicalDate(), [activitiesFromStore]);
 
   if (isLoadingActivities) {
     return (

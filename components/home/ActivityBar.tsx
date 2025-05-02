@@ -21,11 +21,11 @@ export function ActivityBar({
     : [undefined, undefined, undefined];
 
   return (
-    <View className='flex w-full flex-row items-center justify-between gap-2 rounded-md'>
+    <View className='flex w-full flex-row items-center justify-between gap-2 rounded-3xl'>
       <View className='flex flex-row'>
         <View
           className={clsx(
-            'flex w-24 flex-row items-end justify-center rounded-l-md bg-primary/80 px-4 py-4'
+            'flex w-24 flex-row items-end justify-center rounded-l-3xl border-2 border-r-0 border-primary/80 px-4 py-4'
           )}
         >
           <Text>
@@ -36,7 +36,7 @@ export function ActivityBar({
           </Text>
         </View>
         {endTime ? (
-          <View className='flex w-24 flex-row items-end justify-center rounded-r-md bg-destructive/80 px-4 py-4'>
+          <View className='flex w-24 flex-row items-end justify-center rounded-r-3xl border-2 border-destructive/80 px-4 py-4'>
             <Text>
               {endHours}:{endMinutes}
             </Text>
@@ -45,7 +45,7 @@ export function ActivityBar({
             </Text>
           </View>
         ) : (
-          <View className='flex w-24 flex-row items-end justify-center rounded-r-md bg-secondary/10 px-4 py-4'>
+          <View className='flex w-24 flex-row items-end justify-center rounded-r-3xl border-2 border-secondary/20 px-4 py-4'>
             {endTimeEmptyContent}
           </View>
         )}

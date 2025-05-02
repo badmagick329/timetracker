@@ -13,6 +13,7 @@ type ActivityState = {
   activities: Activity[];
   activityInProgress: Activity | undefined;
   lastCompletedActivity: Activity | undefined;
+  activitiesByDate: { [key: string]: Activity[] };
   isLoading: boolean;
   isInitialized: boolean;
   error: string | null;
@@ -26,13 +27,13 @@ type ActivityActions = {
   completeActivity: (endTime: Date) => Promise<string | undefined>;
   removeActivity: (activity: Activity) => Promise<string | undefined>;
   resetAll: () => Promise<void>;
-  groupByLogicalDate: () => { [key: string]: Activity[] } | undefined;
 };
 
 const initialState: ActivityState = {
   activityManager: undefined,
   activities: [],
   activityInProgress: undefined,
+  activitiesByDate: {},
   lastCompletedActivity: undefined,
   isLoading: false,
   isInitialized: false,
@@ -57,6 +58,7 @@ export const useActivityStore = create(
           activities: manager.getActivities(),
           lastCompletedActivity: manager.getLastCompletedActivity(),
           activityInProgress: manager.activityInProgress,
+          activitiesByDate: manager.groupByLogicalDate(),
           isLoading: false,
           isInitialized: true,
           error: null,
@@ -67,6 +69,7 @@ export const useActivityStore = create(
           activityManager: undefined,
           activities: [],
           activityInProgress: undefined,
+          activitiesByDate: {},
           lastCompletedActivity: undefined,
           isLoading: false,
           isInitialized: true,
@@ -98,6 +101,7 @@ export const useActivityStore = create(
           activities: [...manager.getActivities()],
           activityInProgress: manager.activityInProgress,
           lastCompletedActivity: manager.getLastCompletedActivity(),
+          activitiesByDate: manager.groupByLogicalDate(),
         });
         return activity;
       } catch (error) {
@@ -119,6 +123,7 @@ export const useActivityStore = create(
       set({
         activityInProgress: manager.activityInProgress,
         lastCompletedActivity: manager.getLastCompletedActivity(),
+        activitiesByDate: manager.groupByLogicalDate(),
       });
       return completedId;
     },
@@ -138,6 +143,7 @@ export const useActivityStore = create(
             activities: [...manager.getActivities()],
             activityInProgress: manager.activityInProgress,
             lastCompletedActivity: manager.getLastCompletedActivity(),
+            activitiesByDate: manager.groupByLogicalDate(),
           });
         }
         return activity.toString();
@@ -160,18 +166,8 @@ export const useActivityStore = create(
       set({
         activities: [...manager.getActivities()],
         activityInProgress: manager.activityInProgress,
+        activitiesByDate: manager.groupByLogicalDate(),
       });
-    },
-    groupByLogicalDate: () => {
-      const { activityManager: manager } = get();
-      if (!manager) {
-        console.log(
-          'Cannot group activities: Activity Manager not initialized.'
-        );
-        return undefined;
-      }
-
-      return manager.groupByLogicalDate();
     },
   }))
 );
