@@ -1,7 +1,5 @@
 import '@/global.css';
-import { useState } from 'react';
 import { View } from 'react-native';
-import { Category } from '@/lib/core/category';
 import { CurrentActivityControl } from '@/components/home/CurrentActivityControl';
 import { RecentActivityInfo } from '@/components/home/RecentActivityInfo';
 

@@ -1,77 +1,45 @@
-import { useEffect, useState } from 'react';
+import { useActivity } from '@/hooks/useActivity';
+import { useState } from 'react';
 import { View } from 'react-native';
+import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
-import { DisplayedCategory } from '@/lib/types';
+import { CreateActivityParams, DisplayedCategory } from '@/lib/types';
 import { CategoryPicker } from '@/components/home/CategoryPicker';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
-import { useActivityStore } from '@/store/useActivityStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
 
 export function CurrentActivityControl() {
   const [ioInProgress, setIoInProgress] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<
-    Category | undefined
-  >(undefined);
-
-  const [canStart, setCanStart] = useState(false);
-  const [canEnd, setCanEnd] = useState(false);
-  const [canEndFromPreviousActivity, setCanEndFromPreviousActivity] =
-    useState(false);
-
-  const createActivity = useActivityStore((state) => state.createActivity);
-  const lastCompletedActivity = useActivityStore(
-    (state) => state.lastCompletedActivity
-  );
-  const completeActivity = useActivityStore((state) => state.completeActivity);
-  const activityInProgress = useActivityStore(
-    (state) => state.activityInProgress
-  );
-  const isInitialized = useActivityStore((state) => state.isInitialized);
-
   const categories = useCategoryStore((state) => state.categories);
   const getCategory = useCategoryStore((state) => state.getCategory);
 
-  useEffect(() => {
-    setCanStart(
-      isInitialized &&
-        activityInProgress === undefined &&
-        selectedCategory !== undefined
-    );
-    setCanEnd(isInitialized && activityInProgress !== undefined);
-    setCanEndFromPreviousActivity(
-      isInitialized &&
-        activityInProgress === undefined &&
-        lastCompletedActivity !== undefined &&
-        selectedCategory !== undefined
-    );
-  }, [
-    isInitialized,
-    activityInProgress,
-    lastCompletedActivity,
+  const {
+    canStart,
+    canEnd,
+    canEndFromPreviousActivity,
     selectedCategory,
     setSelectedCategory,
-  ]);
+    createActivity,
+    completeActivity,
+    lastCompletedActivity,
+  } = useActivity();
 
-  const handleStart = async () => {
-    if (!canStart) {
-      console.log('Cannot start timer');
-      return;
-    }
+  const handleStart = initializeActivity(
+    canStart,
+    selectedCategory,
+    setIoInProgress,
+    createActivity
+  );
 
-    console.log(`Starting ${selectedCategory}`);
-
-    try {
-      setIoInProgress(true);
-      await createActivity({
-        startTime: new Date(),
-        endTime: undefined,
-        category: selectedCategory!,
-      });
-    } finally {
-      setIoInProgress(false);
-    }
-  };
+  const handleEnd = finalizeActivity(
+    setIoInProgress,
+    createActivity,
+    selectedCategory,
+    setSelectedCategory,
+    canEnd,
+    completeActivity
+  );
 
   const onCategoryValueChange = (option?: DisplayedCategory) => {
     if (!option?.value) {
@@ -80,36 +48,6 @@ export function CurrentActivityControl() {
     }
     const foundCategory = getCategory(option.value);
     setSelectedCategory(foundCategory);
-  };
-
-  const handleEnd = async (customStart?: Date) => {
-    if (customStart) {
-      try {
-        setIoInProgress(true);
-        await createActivity({
-          startTime: customStart,
-          endTime: new Date(),
-          category: selectedCategory!,
-        });
-        setSelectedCategory(undefined);
-      } finally {
-        setIoInProgress(false);
-      }
-      return;
-    }
-
-    if (activityInProgress === undefined) {
-      console.log('No activity in progress');
-      return;
-    }
-
-    try {
-      setIoInProgress(true);
-      await completeActivity(new Date());
-      setSelectedCategory(undefined);
-    } finally {
-      setIoInProgress(false);
-    }
   };
 
   const handleEndFromLastActivity = async () => {
@@ -163,4 +101,78 @@ export function CurrentActivityControl() {
       </View>
     </View>
   );
+}
+
+function finalizeActivity(
+  setIoInProgress: React.Dispatch<React.SetStateAction<boolean>>,
+  createActivity: (
+    params: CreateActivityParams
+  ) => Promise<Activity | undefined>,
+  selectedCategory: Category | undefined,
+  setSelectedCategory: React.Dispatch<
+    React.SetStateAction<Category | undefined>
+  >,
+  canEnd: boolean,
+  completeActivity: (endTime: Date) => Promise<string | undefined>
+) {
+  return async (customStart?: Date) => {
+    if (customStart) {
+      try {
+        setIoInProgress(true);
+        await createActivity({
+          startTime: customStart,
+          endTime: new Date(),
+          category: selectedCategory!,
+        });
+        setSelectedCategory(undefined);
+      } finally {
+        setIoInProgress(false);
+      }
+      return;
+    }
+    if (!canEnd) {
+      console.log('Cannot end timer');
+      return;
+    }
+
+    try {
+      setIoInProgress(true);
+      await completeActivity(new Date());
+      setSelectedCategory(undefined);
+    } finally {
+      setIoInProgress(false);
+    }
+  };
+}
+
+function initializeActivity(
+  canStart: boolean,
+  selectedCategory: Category | undefined,
+  setIoInProgress: React.Dispatch<React.SetStateAction<boolean>>,
+  createActivity: (
+    params: CreateActivityParams
+  ) => Promise<Activity | undefined>
+): () => Promise<void> {
+  return async () => {
+    if (!canStart) {
+      console.log('Cannot start timer');
+      return;
+    }
+
+    if (selectedCategory === undefined) {
+      console.log("No selectedCategory? This shouldn't happen");
+      return;
+    }
+
+    try {
+      setIoInProgress(true);
+      await createActivity({
+        startTime: new Date(),
+        endTime: undefined,
+        category: selectedCategory,
+      });
+    } finally {
+      setIoInProgress(false);
+    }
+  };
 }
