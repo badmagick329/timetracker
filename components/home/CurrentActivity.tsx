@@ -47,7 +47,7 @@ export function CurrentActivity() {
         content={
           <ActivityBar
             endTimeEmptyContent={
-              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-green-700/80 bg-green-700/60'></View>
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/60 bg-destructive/20'></View>
             }
             startTime={new Date()}
           />
@@ -65,6 +65,7 @@ export function CurrentActivity() {
       collapsable={false}
     >
       <ActivityCard
+        cardClassName='border-success/30'
         header={
           <>
             <Text className='text-xl font-bold'>
@@ -78,7 +79,7 @@ export function CurrentActivity() {
         content={
           <ActivityBar
             endTimeEmptyContent={
-              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-green-700/80 bg-green-700/60'></View>
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/60 bg-destructive/20'></View>
             }
             startTime={activityInProgress.start}
           />
