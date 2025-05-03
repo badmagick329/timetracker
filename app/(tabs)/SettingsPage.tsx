@@ -1,5 +1,7 @@
 import { Link, LinkProps } from 'expo-router';
+import React from 'react';
 import { View } from 'react-native';
+import { AnimationExample } from '@/components/examples/AnimationExample';
 
 export default function SettingsPage() {
   return (
