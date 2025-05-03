@@ -1,12 +1,12 @@
-import { View } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import { CurrentActivity } from '@/components/home/CurrentActivity';
 import { LastActivity } from '@/components/home/LastActivity';
 
 export function RecentActivityInfo() {
   return (
-    <View className='flex flex-col items-center gap-8 px-6'>
+    <Animated.View layout={LinearTransition.springify()} collapsable={false}>
       <CurrentActivity />
       <LastActivity />
-    </View>
+    </Animated.View>
   );
 }

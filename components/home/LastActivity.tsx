@@ -1,3 +1,9 @@
+import Animated, {
+  FadeIn,
+  LinearTransition,
+  SlideOutRight,
+} from 'react-native-reanimated';
+import { animationDuration } from '@/lib/consts';
 import { formattedDuration2, titleCase } from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
 import { ActivityCard } from '@/components/home/ActivityCard';
@@ -17,20 +23,28 @@ export function LastActivity() {
   }
 
   return (
-    <ActivityCard
-      header={
-        <>
-          <Text className='text-xl font-bold'>
-            {titleCase(activity.category.name)}
-          </Text>
-          <Text className='text-sm font-bold text-muted-foreground'>
-            {formattedDuration2(activity.duration)}
-          </Text>
-        </>
-      }
-      content={
-        <ActivityBar startTime={activity.start} endTime={activity.end} />
-      }
-    />
+    <Animated.View
+      key='last'
+      entering={FadeIn.duration(animationDuration.sm)}
+      exiting={SlideOutRight.duration(animationDuration.sm)}
+      layout={LinearTransition.springify()}
+      collapsable={false}
+    >
+      <ActivityCard
+        header={
+          <>
+            <Text className='text-xl font-bold'>
+              {titleCase(activity.category.name)}
+            </Text>
+            <Text className='text-sm font-bold text-muted-foreground'>
+              {formattedDuration2(activity.duration)}
+            </Text>
+          </>
+        }
+        content={
+          <ActivityBar startTime={activity.start} endTime={activity.end} />
+        }
+      />
+    </Animated.View>
   );
 }
