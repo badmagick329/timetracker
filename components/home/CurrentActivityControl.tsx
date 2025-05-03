@@ -2,6 +2,7 @@ import { useActivity } from '@/hooks/useActivity';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { StyleSheet } from 'react-native';
+import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
 import { CreateActivityParams, DisplayedCategory } from '@/lib/types';
@@ -84,24 +85,29 @@ export function CurrentActivityControl() {
         >
           <Text>End from last activity</Text>
         </Button>
-        {(canStart || !selectedCategory) && !canEnd ? (
-          <Button
-            className='w-24'
-            disabled={!canStart || ioInProgress}
-            onPress={handleStart}
-          >
-            <Text>Start</Text>
-          </Button>
-        ) : (
-          <Button
-            className='w-24'
-            variant={'destructive'}
-            disabled={!canEnd || ioInProgress}
-            onPress={() => handleEnd()}
-          >
-            <Text>End</Text>
-          </Button>
-        )}
+        <Animated.View
+          layout={LinearTransition.springify()}
+          collapsable={false}
+        >
+          {!canEnd ? (
+            <Button
+              className='w-24'
+              disabled={!canStart || ioInProgress}
+              onPress={handleStart}
+            >
+              <Text>Start</Text>
+            </Button>
+          ) : (
+            <Button
+              className='w-24'
+              variant='destructive'
+              disabled={!canEnd || ioInProgress}
+              onPress={() => handleEnd()}
+            >
+              <Text>End</Text>
+            </Button>
+          )}
+        </Animated.View>
       </View>
     </View>
   );

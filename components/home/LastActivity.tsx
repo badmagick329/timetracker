@@ -1,10 +1,10 @@
-import Animated, {
-  FadeIn,
-  LinearTransition,
-  SlideOutRight,
-} from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { animationDuration } from '@/lib/consts';
-import { formattedDuration2, titleCase } from '@/lib/utils/index';
+import {
+  cardSpringify,
+  formattedDuration2,
+  titleCase,
+} from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Text } from '@/components/ui/text';
@@ -25,9 +25,9 @@ export function LastActivity() {
   return (
     <Animated.View
       key='last'
-      entering={FadeIn.duration(animationDuration.sm)}
-      exiting={SlideOutRight.duration(animationDuration.sm)}
-      layout={LinearTransition.springify()}
+      entering={FadeIn.duration(animationDuration.xs)}
+      exiting={FadeOut.duration(animationDuration.xs)}
+      layout={cardSpringify()}
       collapsable={false}
     >
       <ActivityCard

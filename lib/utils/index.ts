@@ -1,3 +1,5 @@
+import { LinearTransition } from 'react-native-reanimated';
+
 export const titleCase = (str: string): string => {
   return str
     .toLowerCase()
@@ -35,4 +37,12 @@ export function formatTimeOnly(date: Date): string {
     .getMinutes()
     .toString()
     .padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+}
+
+export function cardSpringify() {
+  return LinearTransition.springify()
+    .damping(10)
+    .mass(1)
+    .stiffness(80)
+    .restSpeedThreshold(3);
 }

@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import Animated, {
-  FadeInUp,
-  FadeOutUp,
-  LinearTransition,
-} from 'react-native-reanimated';
+import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { animationDuration } from '@/lib/consts';
-import { formattedDuration2, titleCase } from '@/lib/utils/index';
+import {
+  cardSpringify,
+  formattedDuration2,
+  titleCase,
+} from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
 import { ActivityCard } from '@/components/home/ActivityCard';
 import { Text } from '@/components/ui/text';
@@ -47,7 +47,7 @@ export function CurrentActivity() {
         content={
           <ActivityBar
             endTimeEmptyContent={
-              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-green-700/40 bg-green-700/20'></View>
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-green-700/80 bg-green-700/60'></View>
             }
             startTime={new Date()}
           />
@@ -59,9 +59,9 @@ export function CurrentActivity() {
   return (
     <Animated.View
       key={activityInProgress.id}
-      entering={FadeInUp.duration(animationDuration.sm)}
-      exiting={FadeOutUp.duration(animationDuration.sm)}
-      layout={LinearTransition.springify()}
+      entering={FadeInUp.duration(animationDuration.xs)}
+      exiting={FadeOutUp.duration(animationDuration.xs)}
+      layout={cardSpringify()}
       collapsable={false}
     >
       <ActivityCard
@@ -78,7 +78,7 @@ export function CurrentActivity() {
         content={
           <ActivityBar
             endTimeEmptyContent={
-              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/40 bg-destructive/20'></View>
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-green-700/80 bg-green-700/60'></View>
             }
             startTime={activityInProgress.start}
           />
