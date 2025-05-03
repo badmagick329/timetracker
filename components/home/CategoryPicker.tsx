@@ -60,7 +60,7 @@ export function CategoryPicker({
   return (
     <Select onValueChange={onValueChange} value={selectedDisplayedCategory}>
       <SelectTrigger
-        className='w-[250px] bg-muted-foreground/20'
+        className='w-full bg-muted-foreground/20'
         disabled={!canStart}
       >
         <SelectValue
@@ -68,7 +68,7 @@ export function CategoryPicker({
           placeholder='Select a category'
         />
       </SelectTrigger>
-      <SelectContent insets={contentInsets} className='w-[250px]'>
+      <SelectContent insets={contentInsets} className='w-full'>
         <ScrollView className='max-h-[25vh]'>
           <SelectGroup>
             {displayedCategories.map((c) => {

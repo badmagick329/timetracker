@@ -24,7 +24,6 @@ export function CurrentActivityControl() {
     createActivity,
     completeActivity,
     lastCompletedActivity,
-    activityInProgress,
   } = useActivity();
 
   const handleStart = initializeActivity(
@@ -69,29 +68,14 @@ export function CurrentActivityControl() {
 
   return (
     <View className='flex w-full flex-col gap-12'>
-      <View className='flex w-full flex-row items-center justify-center gap-4'>
+      <View className='flex w-full flex-row items-center justify-center gap-4 px-8'>
         <CategoryPicker
           displayedCategories={displayedCategories}
           onValueChange={onCategoryValueChange}
           selectedCategory={selectedCategory}
         />
-        <Button
-          className='w-24'
-          disabled={!canStart || ioInProgress}
-          onPress={handleStart}
-        >
-          <Text>Start</Text>
-        </Button>
       </View>
-      <View className='flex w-full flex-row items-center justify-center gap-8'>
-        <Button
-          className='w-24'
-          variant={'destructive'}
-          disabled={!canEnd || ioInProgress}
-          onPress={() => handleEnd()}
-        >
-          <Text>End</Text>
-        </Button>
+      <View className='flex w-full flex-row items-center justify-center gap-8 px-8'>
         <Button
           className='w-72'
           variant={'accent'}
@@ -100,6 +84,24 @@ export function CurrentActivityControl() {
         >
           <Text>End from last activity</Text>
         </Button>
+        {(canStart || !selectedCategory) && !canEnd ? (
+          <Button
+            className='w-24'
+            disabled={!canStart || ioInProgress}
+            onPress={handleStart}
+          >
+            <Text>Start</Text>
+          </Button>
+        ) : (
+          <Button
+            className='w-24'
+            variant={'destructive'}
+            disabled={!canEnd || ioInProgress}
+            onPress={() => handleEnd()}
+          >
+            <Text>End</Text>
+          </Button>
+        )}
       </View>
     </View>
   );
