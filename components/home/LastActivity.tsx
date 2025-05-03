@@ -2,7 +2,7 @@ import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { animationDuration } from '@/lib/consts';
 import {
   cardSpringify,
-  formattedDuration2,
+  formatDurationWithUnits,
   titleCase,
 } from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
@@ -37,7 +37,7 @@ export function LastActivity() {
               {titleCase(activity.category.name)}
             </Text>
             <Text className='text-sm font-bold text-muted-foreground'>
-              {formattedDuration2(activity.duration)}
+              {formatDurationWithUnits(activity.duration)}
             </Text>
           </>
         }

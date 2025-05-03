@@ -7,7 +7,8 @@ export const titleCase = (str: string): string => {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ');
 };
-export function formattedDuration(duration: number) {
+
+export function formatDurationWithCentiseconds(duration: number) {
   const ms = ((duration % 1000) / 10) | 0;
   const seconds = Math.floor((duration / 1000) % 60);
   const minutes = Math.floor((duration / (1000 * 60)) % 60);
@@ -20,8 +21,8 @@ export function formattedDuration(duration: number) {
 
   return `${hourString}:${minutesString}:${secondsString}.${msString}`;
 }
-export function formattedDuration2(duration: number) {
-  const ms = ((duration % 1000) / 10) | 0;
+
+export function formatDurationWithUnits(duration: number) {
   const seconds = Math.floor((duration / 1000) % 60);
   const minutes = Math.floor((duration / (1000 * 60)) % 60);
   const hours = Math.floor(duration / (1000 * 60 * 60));
@@ -32,6 +33,7 @@ export function formattedDuration2(duration: number) {
   const secondsString = `${seconds.toString().padStart(2, '0')}s`;
   return `${hourString} ${minutesString} ${secondsString}`.trim();
 }
+
 export function formatTimeOnly(date: Date): string {
   return `${date.getHours().toString().padStart(2, '0')}:${date
     .getMinutes()

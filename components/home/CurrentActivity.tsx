@@ -4,7 +4,7 @@ import Animated, { FadeInUp, FadeOutUp } from 'react-native-reanimated';
 import { animationDuration } from '@/lib/consts';
 import {
   cardSpringify,
-  formattedDuration2,
+  formatDurationWithUnits,
   titleCase,
 } from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
@@ -40,7 +40,7 @@ export function CurrentActivity() {
           <>
             <Text className='text-xl font-bold'>{'Placeholder'}</Text>
             <Text className='text-sm text-muted-foreground'>
-              {formattedDuration2(50000)}
+              {formatDurationWithUnits(50000)}
             </Text>
           </>
         }
@@ -71,7 +71,7 @@ export function CurrentActivity() {
               {titleCase(activityInProgress.category.name)}
             </Text>
             <Text className='text-sm text-muted-foreground'>
-              {formattedDuration2(duration)}
+              {formatDurationWithUnits(duration)}
             </Text>
           </>
         }
