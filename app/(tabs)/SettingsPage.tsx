@@ -1,13 +1,36 @@
 import { Link, LinkProps } from 'expo-router';
-import React from 'react';
-import { View } from 'react-native';
-import { AnimationExample } from '@/components/examples/AnimationExample';
+import React, { useState } from 'react';
+import DatePicker from 'react-native-date-picker';
+import { ScrollContainer } from '@/components/ui/Containers';
+import { Button } from '@/components/ui/button';
+import { Text } from '@/components/ui/text';
 
 export default function SettingsPage() {
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
+
   return (
-    <View className='flex w-full flex-1 flex-col gap-2'>
+    <ScrollContainer className='gap-8 px-8'>
       <SettingLink href='/CategoryPage' label='Category Picker' />
-    </View>
+
+      <Button className='w-full bg-primary/60' onPress={() => setOpen(true)}>
+        <Text>Pick logical date cut off</Text>
+      </Button>
+
+      <DatePicker
+        modal
+        open={open}
+        date={date}
+        mode='time'
+        onConfirm={(date) => {
+          setOpen(false);
+          setDate(date);
+        }}
+        onCancel={() => {
+          setOpen(false);
+        }}
+      />
+    </ScrollContainer>
   );
 }
 
@@ -21,7 +44,7 @@ function SettingLink({
   return (
     <Link
       href={href}
-      className='w-full rounded-md bg-primary/20 px-8 py-4 text-center text-foreground'
+      className='w-full rounded-md bg-primary/60 px-8 py-4 text-center text-foreground'
     >
       {label}
     </Link>

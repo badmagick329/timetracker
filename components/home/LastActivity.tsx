@@ -6,7 +6,11 @@ import {
   titleCase,
 } from '@/lib/utils/index';
 import { ActivityBar } from '@/components/home/ActivityBar';
-import { ActivityCard } from '@/components/home/ActivityCard';
+import {
+  ActivityCardContent,
+  ActivityCardHeader,
+  ActivityCardWrapper,
+} from '@/components/home/ActivityCard';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
@@ -30,21 +34,19 @@ export function LastActivity() {
       layout={cardSpringify()}
       collapsable={false}
     >
-      <ActivityCard
-        header={
-          <>
-            <Text className='text-xl font-bold'>
-              {titleCase(activity.category.name)}
-            </Text>
-            <Text className='text-sm font-bold text-muted-foreground'>
-              {formatDurationWithUnits(activity.duration)}
-            </Text>
-          </>
-        }
-        content={
+      <ActivityCardWrapper>
+        <ActivityCardHeader>
+          <Text className='text-xl font-bold'>
+            {titleCase(activity.category.name)}
+          </Text>
+          <Text className='text-sm font-bold text-muted-foreground'>
+            {formatDurationWithUnits(activity.duration)}
+          </Text>
+        </ActivityCardHeader>
+        <ActivityCardContent>
           <ActivityBar startTime={activity.start} endTime={activity.end} />
-        }
-      />
+        </ActivityCardContent>
+      </ActivityCardWrapper>
     </Animated.View>
   );
 }

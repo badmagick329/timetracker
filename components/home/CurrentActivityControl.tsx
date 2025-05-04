@@ -68,7 +68,7 @@ export function CurrentActivityControl() {
   }));
 
   return (
-    <View className='flex w-full flex-col gap-12'>
+    <View className='flex w-full flex-col gap-4'>
       <View className='flex w-full flex-row items-center justify-center gap-4 px-8'>
         <CategoryPicker
           displayedCategories={displayedCategories}

@@ -1,33 +1,50 @@
 import clsx from 'clsx';
 import { View } from 'react-native';
 
-export function ActivityCard({
-  header,
-  content,
-  cardClassName = '',
-  headerClassName = '',
+export function ActivityCardWrapper({
+  className = '',
+  children,
 }: {
-  header: React.ReactNode;
-  content: React.ReactNode;
-  cardClassName?: string;
-  headerClassName?: string;
+  className?: string;
+  children: React.ReactNode;
 }) {
   return (
     <View
       className={clsx(
         'flex w-full flex-col gap-8 rounded-lg border-2 border-foreground/40 px-4 pb-6 pt-2',
-        cardClassName
+        className
       )}
     >
-      <View
-        className={clsx(
-          'flex w-full flex-row items-center justify-between gap-4 border-b-2 border-foreground/80',
-          headerClassName
-        )}
-      >
-        {header}
-      </View>
-      {content}
+      {children}
     </View>
   );
+}
+
+export function ActivityCardHeader({
+  className = '',
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode | string;
+}) {
+  return (
+    <View
+      className={clsx(
+        'flex w-full flex-row items-center justify-between gap-4 border-b-2 border-foreground/80',
+        className
+      )}
+    >
+      {children}
+    </View>
+  );
+}
+
+export function ActivityCardContent({
+  className = '',
+  children,
+}: {
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return <View className={className}>{children}</View>;
 }

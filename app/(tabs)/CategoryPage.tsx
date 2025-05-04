@@ -19,7 +19,7 @@ export default function CategoryPage() {
   }
 
   return (
-    <View className='flex w-full flex-1 flex-col gap-2'>
+    <View className='flex w-full flex-1 flex-col gap-2 px-8'>
       {categories.map((c) => {
         return (
           <View key={c.id}>
