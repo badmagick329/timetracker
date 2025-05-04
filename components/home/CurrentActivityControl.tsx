@@ -5,16 +5,22 @@ import { StyleSheet } from 'react-native';
 import Animated, { LinearTransition } from 'react-native-reanimated';
 import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
+import { TimeOnly } from '@/lib/core/time-only';
 import { CreateActivityParams, DisplayedCategory } from '@/lib/types';
 import { CategoryPicker } from '@/components/home/CategoryPicker';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
+import { useAppSettingsStore } from '@/store/useAppSettingsStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
 
 export function CurrentActivityControl() {
   const [ioInProgress, setIoInProgress] = useState(false);
   const categories = useCategoryStore((state) => state.categories);
   const getCategory = useCategoryStore((state) => state.getCategory);
+
+  const logicalDateCutOff = useAppSettingsStore(
+    (state) => state.appSettings?.logicalDateCutOff
+  );
 
   const {
     canStart,
@@ -53,12 +59,23 @@ export function CurrentActivityControl() {
   };
 
   const handleEndFromLastActivity = async () => {
-    if (lastCompletedActivity && lastCompletedActivity.end) {
+    if (!logicalDateCutOff) {
+      console.log('No logicalDateCutOff found');
+      return;
+    }
+    if (
+      lastCompletedActivity &&
+      lastCompletedActivity.end &&
+      logicalDateCutOff
+    ) {
       console.log('Last Activity:', lastCompletedActivity);
-      await handleEnd(lastCompletedActivity.end);
+      await handleEnd({
+        customStart: lastCompletedActivity.end,
+        logicalDateCutOff,
+      });
     } else {
       console.log('No last activity found or start time is undefined');
-      await handleEnd();
+      await handleEnd({ logicalDateCutOff });
     }
   };
 
@@ -92,8 +109,10 @@ export function CurrentActivityControl() {
           {!canEnd ? (
             <Button
               className='w-24'
-              disabled={!canStart || ioInProgress}
-              onPress={handleStart}
+              disabled={!canStart || ioInProgress || !logicalDateCutOff}
+              onPress={() =>
+                logicalDateCutOff && handleStart(logicalDateCutOff)
+              }
             >
               <Text>Start</Text>
             </Button>
@@ -101,8 +120,10 @@ export function CurrentActivityControl() {
             <Button
               className='w-24'
               variant='destructive'
-              disabled={!canEnd || ioInProgress}
-              onPress={() => handleEnd()}
+              disabled={!canEnd || ioInProgress || !logicalDateCutOff}
+              onPress={() =>
+                logicalDateCutOff && handleEnd({ logicalDateCutOff })
+              }
             >
               <Text>End</Text>
             </Button>
@@ -125,7 +146,13 @@ function finalizeActivity(
   canEnd: boolean,
   completeActivity: (endTime: Date) => Promise<string | undefined>
 ) {
-  return async (customStart?: Date) => {
+  return async ({
+    logicalDateCutOff,
+    customStart,
+  }: {
+    logicalDateCutOff: TimeOnly;
+    customStart?: Date;
+  }) => {
     if (customStart) {
       try {
         setIoInProgress(true);
@@ -133,6 +160,7 @@ function finalizeActivity(
           startTime: customStart,
           endTime: new Date(),
           category: selectedCategory!,
+          logicalDateCutOff,
         });
         setSelectedCategory(undefined);
       } finally {
@@ -162,8 +190,8 @@ function initializeActivity(
   createActivity: (
     params: CreateActivityParams
   ) => Promise<Activity | undefined>
-): () => Promise<void> {
-  return async () => {
+) {
+  return async (logicalDateCutOff: TimeOnly) => {
     if (!canStart) {
       console.log('Cannot start timer');
       return;
@@ -180,6 +208,7 @@ function initializeActivity(
         startTime: new Date(),
         endTime: undefined,
         category: selectedCategory,
+        logicalDateCutOff,
       });
     } finally {
       setIoInProgress(false);

@@ -11,6 +11,7 @@ export type CreateActivityParams = {
   startTime: Date;
   category: { id: string; name: string };
   endTime?: Date;
+  logicalDateCutOff: TimeOnly;
 };
 
 export type ActivityFilters = {

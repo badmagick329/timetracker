@@ -78,7 +78,12 @@ export const useActivityStore = create(
       }
     },
 
-    createActivity: async ({ startTime, category, endTime }) => {
+    createActivity: async ({
+      startTime,
+      category,
+      endTime,
+      logicalDateCutOff,
+    }) => {
       const { activityManager: manager } = get();
       if (!manager) {
         console.log(
@@ -88,7 +93,7 @@ export const useActivityStore = create(
       }
 
       try {
-        const logicalDate = new DateOnly(startTime);
+        const logicalDate = new DateOnly(logicalDateCutOff.toDate());
         const activity = new Activity({
           timespan: Timespan.create(startTime, logicalDate, endTime),
           category: Category.create(category.name, category.id),
