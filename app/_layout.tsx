@@ -13,9 +13,11 @@ import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NAV_THEME } from '@/lib/constants';
 import { ActivitiesJsonStorage } from '@/lib/data/activities-json-storage';
+import { AppSettingsJsonStorage } from '@/lib/data/app-settings-json-storage';
 import { CategoriesJsonStorage } from '@/lib/data/categories-json-storage';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { useActivityStore } from '@/store/useActivityStore';
+import { useAppSettingsStore } from '@/store/useAppSettingsStore';
 import { useCategoryStore } from '@/store/useCategoryStore';
 
 const LIGHT_THEME: Theme = {
@@ -38,6 +40,9 @@ export default function RootLayout() {
   const [isColorSchemeLoaded, setIsColorSchemeLoaded] = useState(false);
   const initializeActivityStore = useActivityStore((state) => state.initialize);
   const initialCategoryStore = useCategoryStore((state) => state.initialize);
+  const initializeAppSettingsStore = useAppSettingsStore(
+    (state) => state.initialize
+  );
 
   useIsomorphicLayoutEffect(() => {
     if (hasMounted.current) {
@@ -56,8 +61,13 @@ export default function RootLayout() {
     (async () => {
       initializeActivityStore(await ActivitiesJsonStorage.create());
       initialCategoryStore(await CategoriesJsonStorage.create());
+      initializeAppSettingsStore(await AppSettingsJsonStorage.create());
     })();
-  }, [initializeActivityStore, initialCategoryStore]);
+  }, [
+    initializeActivityStore,
+    initialCategoryStore,
+    initializeAppSettingsStore,
+  ]);
 
   if (!isColorSchemeLoaded) {
     return null;
