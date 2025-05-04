@@ -4,8 +4,8 @@ import { Activity } from '@/lib/core/activity';
 import { ActivityManager } from '@/lib/core/activity-manager';
 import { Category } from '@/lib/core/category';
 import { DateOnly } from '@/lib/core/date-only';
+import { IActivitiesRepository } from '@/lib/core/iactivities-repository';
 import { Timespan } from '@/lib/core/timespan';
-import { ActivitiesJsonStorage } from '@/lib/data/activities-json-storage';
 import { CreateActivityParams } from '@/lib/types';
 
 type ActivityState = {
@@ -20,7 +20,7 @@ type ActivityState = {
 };
 
 type ActivityActions = {
-  initialize: () => Promise<void>;
+  initialize: (respository: IActivitiesRepository) => Promise<void>;
   createActivity: (
     params: CreateActivityParams
   ) => Promise<Activity | undefined>;
@@ -42,7 +42,7 @@ const initialState: ActivityState = {
 
 export const useActivityStore = create(
   combine<ActivityState, ActivityActions>(initialState, (set, get) => ({
-    initialize: async () => {
+    initialize: async (respository: IActivitiesRepository) => {
       if (get().isInitialized || get().isLoading) {
         return;
       }
@@ -50,8 +50,7 @@ export const useActivityStore = create(
       set({ isLoading: true, error: null });
 
       try {
-        const storage = await ActivitiesJsonStorage.create();
-        const manager = new ActivityManager(storage);
+        const manager = new ActivityManager(respository);
 
         set({
           activityManager: manager,

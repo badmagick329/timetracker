@@ -1,5 +1,5 @@
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { animationDuration } from '@/lib/consts';
+import { animationDuration } from '@/lib/constants';
 import {
   cardSpringify,
   formatDurationWithUnits,

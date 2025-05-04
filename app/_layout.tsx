@@ -12,6 +12,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { NAV_THEME } from '@/lib/constants';
+import { ActivitiesJsonStorage } from '@/lib/data/activities-json-storage';
 import { CategoriesJsonStorage } from '@/lib/data/categories-json-storage';
 import { useColorScheme } from '@/lib/useColorScheme';
 import { useActivityStore } from '@/store/useActivityStore';
@@ -52,8 +53,8 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    initializeActivityStore();
     (async () => {
+      initializeActivityStore(await ActivitiesJsonStorage.create());
       initialCategoryStore(await CategoriesJsonStorage.create());
     })();
   }, [initializeActivityStore, initialCategoryStore]);

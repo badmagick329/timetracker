@@ -12,6 +12,7 @@ export const NAV_THEME = {
     card: 'hsl(223 58% 4%)', // card
     notification: 'hsl(20 80% 50%)', // destructive
     primary: 'hsl(223 61% 31%)', // primary
+    success: 'hsl(120 80% 50%)', // success
     text: 'hsl(223 39% 97%)', // foreground
   },
   dark: {
@@ -20,6 +21,13 @@ export const NAV_THEME = {
     card: 'hsl(223 58% 4%)', // card
     notification: 'hsl(20 80% 50%)', // destructive
     primary: 'hsl(223 61% 31%)', // primary
+    success: 'hsl(120 80% 50%)', // success
     text: 'hsl(223 39% 97%)', // foreground
   },
+};
+export const animationDuration = {
+  xs: 150,
+  sm: 200,
+  md: 250,
+  lg: 350,
 };
