@@ -18,8 +18,47 @@ export class DateOnly {
   }
 
   public static fromYMD(v: string): DateOnly {
-    const [year, month, day] = v.split('-').map(Number);
-    return new DateOnly(new Date(Date.UTC(year, month - 1, day)));
+    if (!v) {
+      throw new Error('Input string cannot be empty.');
+    }
+    const pattern = /^\d{4}-\d{2}-\d{2}$/;
+    if (!pattern.test(v)) {
+      throw new Error(`Invalid date format: "${v}". Expected YYYY-MM-DD.`);
+    }
+    const parts = v.split('-');
+    const year = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10);
+    const day = parseInt(parts[2], 10);
+
+    if (isNaN(year) || isNaN(month) || isNaN(day)) {
+      throw new Error(`Invalid date components in "${v}".`);
+    }
+
+    if (month < 1 || month > 12) {
+      throw new Error(
+        `Invalid month: ${month} in "${v}". Month must be between 1 and 12.`
+      );
+    }
+
+    if (day < 1 || day > 31) {
+      throw new Error(
+        `Invalid day: ${day} in "${v}". Day must be between 1 and 31.`
+      );
+    }
+
+    const date = new Date(Date.UTC(year, month - 1, day));
+
+    if (
+      date.getUTCFullYear() !== year ||
+      date.getUTCMonth() !== month - 1 ||
+      date.getUTCDate() !== day
+    ) {
+      throw new Error(
+        `Invalid date: "${v}". The combination of year, month, and day is not valid.`
+      );
+    }
+
+    return new DateOnly(date);
   }
 
   toString(): string {
