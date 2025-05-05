@@ -39,7 +39,7 @@ export function CurrentActivity() {
   if (!activityInProgress) {
     const showPlaceholder = false;
     return showPlaceholder ? (
-      <ActivityCardWrapper>
+      <ActivityCardWrapper className='shadow-glow-success border-4 border-success/60 bg-background'>
         <ActivityCardHeader>
           <Text className='text-xl font-bold'>{'Placeholder'}</Text>
           <Text className='text-sm text-muted-foreground'>
@@ -66,7 +66,7 @@ export function CurrentActivity() {
       layout={cardSpringify()}
       collapsable={false}
     >
-      <ActivityCardWrapper className='border-success/60'>
+      <ActivityCardWrapper className='shadow-glow-success border-4 border-success/60 bg-background'>
         <ActivityCardHeader>
           <Text className='text-xl font-bold'>
             {titleCase(activityInProgress.category.name)}

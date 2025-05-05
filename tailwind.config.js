@@ -59,6 +59,10 @@ module.exports = {
         // ensure this works
         hairline: 2,
       },
+      boxShadow: {
+        'glow-success': '0 0 20px hsla(120, 80%, 50%, 1)',
+        'glow-accent': '0 0 20px hsla(253, 61%, 31%, 1)',
+      },
     },
   },
   plugins: [],
