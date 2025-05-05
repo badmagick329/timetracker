@@ -63,20 +63,25 @@ export function CurrentActivityControl() {
       console.log('No logicalDateCutOff found');
       return;
     }
-    if (
-      lastCompletedActivity &&
-      lastCompletedActivity.end &&
-      logicalDateCutOff
-    ) {
-      console.log('Last Activity:', lastCompletedActivity);
-      await handleEnd({
-        customStart: lastCompletedActivity.end,
-        logicalDateCutOff,
-      });
-    } else {
-      console.log('No last activity found or start time is undefined');
-      await handleEnd({ logicalDateCutOff });
+
+    console.log('Last Activity:', lastCompletedActivity);
+    await handleEnd({
+      customStart: lastCompletedActivity?.end,
+      logicalDateCutOff,
+    });
+  };
+
+  const handleStartFromLastActivity = async () => {
+    if (!logicalDateCutOff) {
+      console.log('No logicalDateCutOff found');
+      return;
     }
+
+    console.log('Last Activity:', lastCompletedActivity);
+    await handleStart({
+      customStart: lastCompletedActivity?.end,
+      logicalDateCutOff,
+    });
   };
 
   const displayedCategories = categories.map((c) => ({
@@ -93,14 +98,13 @@ export function CurrentActivityControl() {
           selectedCategory={selectedCategory}
         />
       </View>
-      <View className='flex w-full flex-row items-center justify-center gap-8 px-8'>
+      <View className='flex w-full flex-row items-center justify-between gap-8 px-8'>
         <Button
-          className='w-72'
-          variant={'accent'}
-          disabled={!canEndFromPreviousActivity || ioInProgress}
-          onPress={handleEndFromLastActivity}
+          className='w-64'
+          disabled={!canStart || ioInProgress || !logicalDateCutOff}
+          onPress={handleStartFromLastActivity}
         >
-          <Text>End from last activity</Text>
+          <Text>Start from last activity</Text>
         </Button>
         <Animated.View
           layout={LinearTransition.springify()}
@@ -111,7 +115,7 @@ export function CurrentActivityControl() {
               className='w-24'
               disabled={!canStart || ioInProgress || !logicalDateCutOff}
               onPress={() =>
-                logicalDateCutOff && handleStart(logicalDateCutOff)
+                logicalDateCutOff && handleStart({ logicalDateCutOff })
               }
             >
               <Text>Start</Text>
@@ -129,6 +133,16 @@ export function CurrentActivityControl() {
             </Button>
           )}
         </Animated.View>
+      </View>
+      <View className='flex w-full flex-row items-center justify-start gap-8 px-8'>
+        <Button
+          className='w-64'
+          variant={'accent'}
+          disabled={!canEndFromPreviousActivity || ioInProgress}
+          onPress={handleEndFromLastActivity}
+        >
+          <Text>End from last activity</Text>
+        </Button>
       </View>
     </View>
   );
@@ -191,7 +205,13 @@ function initializeActivity(
     params: CreateActivityParams
   ) => Promise<Activity | undefined>
 ) {
-  return async (logicalDateCutOff: TimeOnly) => {
+  return async ({
+    customStart,
+    logicalDateCutOff,
+  }: {
+    customStart?: Date;
+    logicalDateCutOff: TimeOnly;
+  }) => {
     if (!canStart) {
       console.log('Cannot start timer');
       return;
@@ -205,7 +225,7 @@ function initializeActivity(
     try {
       setIoInProgress(true);
       await createActivity({
-        startTime: new Date(),
+        startTime: customStart || new Date(),
         endTime: undefined,
         category: selectedCategory,
         logicalDateCutOff,
@@ -215,15 +235,3 @@ function initializeActivity(
     }
   };
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'red',
-    paddingVertical: 15,
-    marginVertical: 10,
-    borderRadius: 10,
-    width: 200,
-  },
-});
