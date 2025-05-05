@@ -40,3 +40,4 @@ app-example
 
 .ignore/
 android/
+.idea/
