@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native';
 import { Activity } from '@/lib/core/activity';
-import { formatTimeOnly } from '@/lib/utils/index';
+import { ActivityDisplay } from '@/components/activities/ActivityDisplay';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
@@ -25,15 +25,18 @@ export default function ActivitiesPage() {
       </View>
     );
   }
+  const entries = Object.entries(activities);
+  entries.sort(([aKey], [bKey]) => bKey.localeCompare(aKey));
+  const sortedActivities = Object.fromEntries(entries);
 
   return (
-    <ScrollView className='flex flex-1 flex-col gap-8 px-2'>
-      {Object.keys(activities).map((logicalDate) => (
-        <View key={logicalDate} className='w-full'>
-          <Text className='text-lg font-bold'>{logicalDate}</Text>
-          {activities[logicalDate].map((a) => (
-            <ActivityCard key={a.id} activity={a} />
-          ))}
+    <ScrollView className='flex flex-col gap-8 px-2'>
+      {Object.keys(sortedActivities).map((logicalDate) => (
+        <View key={logicalDate} className='w-full gap-4 pt-4'>
+          <Text className='rounded-md bg-foreground/20 py-2 text-center text-xl font-bold'>
+            {logicalDate}
+          </Text>
+          <ActivitiesDisplayAsDesc activities={activities[logicalDate]} />
         </View>
       ))}
       {/* Reset button for testing */}
@@ -46,19 +49,18 @@ export default function ActivitiesPage() {
   );
 }
 
-function ActivityCard({ activity }: { activity: Activity }) {
+function ActivitiesDisplayAsDesc({ activities }: { activities: Activity[] }) {
+  const sortedActivities = activities.sort((a, b) => {
+    if (a.start > b.start) return -1;
+    if (a.start < b.start) return 1;
+    return 0;
+  });
+
   return (
-    <View className='flex w-full flex-row gap-8 px-8'>
-      <View className='flex flex-row gap-2'>
-        <Text className='text-slate-400'>{formatTimeOnly(activity.start)}</Text>
-        <Text className='text-slate-200'>-</Text>
-        <Text className='text-slate-200'>
-          {activity.end ? formatTimeOnly(activity.end) : '...'}
-        </Text>
-      </View>
-      <View>
-        <Text>{activity.category.toString()}</Text>
-      </View>
-    </View>
+    <>
+      {sortedActivities.map((a) => (
+        <ActivityDisplay key={a.id} activity={a} />
+      ))}
+    </>
   );
 }

@@ -35,10 +35,10 @@ export function formatDurationWithUnits(duration: number) {
 }
 
 export function formatTimeOnly(date: Date): string {
-  return `${date.getHours().toString().padStart(2, '0')}:${date
-    .getMinutes()
-    .toString()
-    .padStart(2, '0')}:${date.getSeconds().toString().padStart(2, '0')}`;
+  const [startHours, startMinutes, startSeconds] = date
+    .toLocaleTimeString()
+    .split(':');
+  return `${startHours}:${startMinutes}.${startSeconds}`;
 }
 
 export function cardSpringify() {
