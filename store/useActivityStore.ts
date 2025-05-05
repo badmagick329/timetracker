@@ -5,6 +5,7 @@ import { ActivityManager } from '@/lib/core/activity-manager';
 import { Category } from '@/lib/core/category';
 import { DateOnly } from '@/lib/core/date-only';
 import { IActivitiesRepository } from '@/lib/core/iactivities-repository';
+import { TimeOnly } from '@/lib/core/time-only';
 import { Timespan } from '@/lib/core/timespan';
 import { CreateActivityParams } from '@/lib/types';
 
@@ -93,7 +94,11 @@ export const useActivityStore = create(
       }
 
       try {
-        const logicalDate = new DateOnly(logicalDateCutOff.toDate());
+        const logicalDate =
+          TimeOnly.fromDate(startTime) < logicalDateCutOff
+            ? DateOnly.addDays(startTime, -1)
+            : new DateOnly(startTime);
+
         const activity = new Activity({
           timespan: Timespan.create(startTime, logicalDate, endTime),
           category: Category.create(category.name, category.id),

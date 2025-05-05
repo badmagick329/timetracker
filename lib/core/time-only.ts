@@ -60,7 +60,7 @@ export class TimeOnly {
     return date;
   }
 
-  public equals(other: TimeOnly) {
+  equals(other: TimeOnly) {
     return (
       this.hours === other.hours &&
       this.minutes === other.minutes &&
@@ -68,7 +68,11 @@ export class TimeOnly {
     );
   }
 
-  public toJSON(): string {
+  toJSON(): string {
     return this.toString();
+  }
+
+  valueOf(): number {
+    return this.hours * 3600 + this.minutes * 60 + this.seconds;
   }
 }

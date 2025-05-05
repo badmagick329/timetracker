@@ -79,4 +79,16 @@ export class DateOnly {
   toJSON() {
     return this._value.toString();
   }
+
+  addDays(days: number) {
+    const yesterday = new Date(this._value);
+    yesterday.setDate(yesterday.getDate() + days);
+    return new DateOnly(yesterday);
+  }
+
+  static addDays(date: Date, days: number) {
+    const yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate() + days);
+    return new DateOnly(yesterday);
+  }
 }
