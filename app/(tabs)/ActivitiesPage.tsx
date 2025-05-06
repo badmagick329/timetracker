@@ -33,7 +33,7 @@ export default function ActivitiesPage() {
     <ScrollView className='flex flex-col gap-8 px-2'>
       {Object.keys(sortedActivities).map((logicalDate) => (
         <View key={logicalDate} className='w-full gap-4 pt-4'>
-          <Text className='rounded-md bg-foreground/20 py-2 text-center text-xl font-bold'>
+          <Text className='rounded-md bg-secondary py-2 text-center text-xl font-bold'>
             {logicalDate}
           </Text>
           <ActivitiesDisplayAsDesc activities={activities[logicalDate]} />
