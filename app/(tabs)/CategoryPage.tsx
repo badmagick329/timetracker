@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { View } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Text } from '@/components/ui/text';
@@ -19,67 +20,72 @@ export default function CategoryPage() {
   }
 
   return (
-    <View className='flex w-full flex-1 flex-col gap-2 px-8'>
-      {categories.map((c) => {
-        return (
-          <View key={c.id}>
-            <Text>{c.name}</Text>
+    <ScrollView>
+      <View className='flex w-full flex-1 flex-col gap-2 px-8'>
+        {categories.map((c) => {
+          return (
+            <View className='flex flex-row justify-between gap-2' key={c.id}>
+              <Text>{c.name}</Text>
+              <Button
+                variant={'destructive'}
+                onPress={async () => {
+                  try {
+                    setIoInProgress(true);
+                    await removeCategory(c.id);
+                  } finally {
+                    setIoInProgress(false);
+                  }
+                }}
+                disabled={ioInProgress}
+              >
+                <Text>Delete</Text>
+              </Button>
+            </View>
+          );
+        })}
+        <View className='flex w-full flex-col gap-4 pt-8'>
+          <View className='flex flex-row justify-between gap-2'>
+            <Input
+              placeholder='Write some stuff...'
+              value={categoryText}
+              onChangeText={setCategoryText}
+              aria-labelledby='inputLabel'
+              aria-errormessage='inputError'
+              className='grow border-2 border-solid border-cyan-400/40 focus-visible:border-cyan-400'
+            />
             <Button
               onPress={async () => {
                 try {
                   setIoInProgress(true);
-                  await removeCategory(c.id);
+                  await createCategory(categoryText.trim());
+                  setCategoryText('');
                 } finally {
                   setIoInProgress(false);
                 }
               }}
-              disabled={ioInProgress}
+              disabled={ioInProgress || categoryText.trim() === ''}
             >
-              <Text>Delete</Text>
+              <Text>Add</Text>
             </Button>
           </View>
-        );
-      })}
-      <View className='flex w-full flex-col gap-4 pt-8'>
-        <Input
-          placeholder='Write some stuff...'
-          value={categoryText}
-          onChangeText={setCategoryText}
-          aria-labelledby='inputLabel'
-          aria-errormessage='inputError'
-          className='border-2 border-solid border-cyan-400'
-        />
-        <View className='flex flex-col gap-4'>
-          <Button
-            onPress={async () => {
-              try {
-                setIoInProgress(true);
-                await createCategory(categoryText.trim());
-                setCategoryText('');
-              } finally {
-                setIoInProgress(false);
-              }
-            }}
-            disabled={ioInProgress || categoryText.trim() === ''}
-          >
-            <Text>Add</Text>
-          </Button>
-          <Button
-            onPress={async () => {
-              try {
-                setIoInProgress(true);
-                await resetCategories();
-              } finally {
-                setIoInProgress(false);
-              }
-            }}
-            variant={'destructive'}
-            disabled={ioInProgress || categories.length === 0}
-          >
-            <Text>RESET ALL</Text>
-          </Button>
+          <View className='flex flex-col items-center gap-4'>
+            <Button
+              onPress={async () => {
+                try {
+                  setIoInProgress(true);
+                  await resetCategories();
+                } finally {
+                  setIoInProgress(false);
+                }
+              }}
+              variant={'destructive'}
+              disabled={ioInProgress || categories.length === 0}
+            >
+              <Text>RESET ALL</Text>
+            </Button>
+          </View>
         </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
