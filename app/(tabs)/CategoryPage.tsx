@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { View } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button } from '@/components/ui/button';
+import { Button, ButtonVariants } from '@/components/ui/button';
 import {
   Dialog,
   DialogClose,
@@ -32,78 +32,10 @@ export default function CategoryPage() {
   return (
     <ScrollView>
       <View className='flex w-full flex-1 flex-col gap-2 px-8'>
-        <>
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button variant='outline'>
-                <Text>Edit Profile</Text>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className='sm:max-w-[425px]'>
-              <DialogHeader>
-                <DialogTitle>Edit profile</DialogTitle>
-                <DialogDescription>
-                  Make changes to your profile here. Click save when you're
-                  done.
-                </DialogDescription>
-              </DialogHeader>
-              <DialogFooter>
-                <DialogClose asChild>
-                  <Button>
-                    <Text>OK</Text>
-                  </Button>
-                </DialogClose>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </>
-        {categories.map((c) => {
-          return (
-            <View className='flex flex-row justify-between gap-2' key={c.id}>
-              <Text>{c.name}</Text>
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant='outline' disabled={ioInProgress}>
-                    <Text>Delete</Text>
-                  </Button>
-                </DialogTrigger>
-                <DialogContent className='sm:max-w-[425px]'>
-                  <DialogHeader>
-                    <DialogTitle>Confirm Delete</DialogTitle>
-                    <DialogDescription>
-                      Are you sure you want to delete this category? This action
-                      cannot be undone.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <View className='flex flex-row justify-end'>
-                        <Button
-                          variant={'destructive'}
-                          onPress={async () => {
-                            try {
-                              setIoInProgress(true);
-                              await removeCategory(c.id);
-                            } finally {
-                              setIoInProgress(false);
-                            }
-                          }}
-                          disabled={ioInProgress}
-                        >
-                          <Text>Yes</Text>
-                        </Button>
-                      </View>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            </View>
-          );
-        })}
         <View className='flex w-full flex-col gap-4 pt-8'>
           <View className='flex flex-row justify-between gap-2'>
             <Input
-              placeholder='Write some stuff...'
+              placeholder='Category name'
               value={categoryText}
               onChangeText={setCategoryText}
               aria-labelledby='inputLabel'
@@ -126,8 +58,13 @@ export default function CategoryPage() {
             </Button>
           </View>
           <View className='flex flex-col items-center gap-4'>
-            <Button
-              onPress={async () => {
+            <DialogComponent
+              isEnabled={!(ioInProgress || categories.length === 0)}
+              buttonText='Reset All'
+              description='Are you sure you want to reset all categories? This action cannot be undone.'
+              dialogTitle='Confirm Reset'
+              confirmationText='Yes'
+              onConfirm={async () => {
                 try {
                   setIoInProgress(true);
                   await resetCategories();
@@ -135,14 +72,86 @@ export default function CategoryPage() {
                   setIoInProgress(false);
                 }
               }}
-              variant={'destructive'}
-              disabled={ioInProgress || categories.length === 0}
-            >
-              <Text>RESET ALL</Text>
-            </Button>
+            />
           </View>
         </View>
+        {categories.map((c) => {
+          return (
+            <View className='flex flex-row justify-between gap-2' key={c.id}>
+              <Text>{c.name}</Text>
+              <DialogComponent
+                isEnabled={ioInProgress === false}
+                buttonText='Delete'
+                description='Are you sure you want to delete this category? This action cannot be undone.'
+                dialogTitle='Confirm Delete'
+                confirmationText='Yes'
+                onConfirm={async () => {
+                  try {
+                    setIoInProgress(true);
+                    await removeCategory(c.id);
+                  } finally {
+                    setIoInProgress(false);
+                  }
+                }}
+              />
+            </View>
+          );
+        })}
       </View>
     </ScrollView>
+  );
+}
+
+function DialogComponent({
+  isEnabled,
+  buttonText,
+  description,
+  dialogTitle,
+  confirmationText = 'Yes',
+  onConfirm,
+  buttonVariant = {
+    variant: 'default',
+    size: 'default',
+  },
+}: {
+  isEnabled: boolean;
+  buttonText: string;
+  description: string;
+  dialogTitle: string;
+  confirmationText?: string;
+  onConfirm: () => void;
+  buttonVariant?: ButtonVariants;
+}) {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button
+          variant={buttonVariant.variant}
+          size={buttonVariant.size}
+          disabled={!isEnabled}
+        >
+          <Text>{buttonText}</Text>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className='sm:max-w-[425px]'>
+        <DialogHeader>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <DialogClose asChild>
+            <View className='flex flex-row justify-end'>
+              <Button
+                variant={'destructive'}
+                onPress={onConfirm}
+                disabled={!isEnabled}
+              >
+                <Text>{confirmationText}</Text>
+              </Button>
+            </View>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

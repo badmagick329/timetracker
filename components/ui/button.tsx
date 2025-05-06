@@ -18,6 +18,8 @@ const buttonVariants = cva(
         ghost:
           'web:hover:bg-accent web:hover:text-accent-foreground active:bg-accent',
         link: 'web:underline-offset-4 web:hover:underline web:focus:underline',
+        success: 'bg-success web:hover:opacity-90 active:opacity-90',
+        warning: 'bg-warning web:hover:opacity-90 active:opacity-90',
       },
       size: {
         default: 'h-10 px-4 py-2 native:h-12 native:px-5 native:py-3',
@@ -46,6 +48,8 @@ const buttonTextVariants = cva(
           'text-secondary-foreground group-active:text-secondary-foreground',
         ghost: 'group-active:text-accent-foreground',
         link: 'text-primary group-active:underline',
+        success: 'text-success-foreground',
+        warning: 'text-warning-foreground',
       },
       size: {
         default: '',
@@ -61,8 +65,10 @@ const buttonTextVariants = cva(
   }
 );
 
+export type ButtonVariants = VariantProps<typeof buttonVariants>;
+
 type ButtonProps = React.ComponentPropsWithoutRef<typeof Pressable> &
-  VariantProps<typeof buttonVariants>;
+  ButtonVariants;
 
 const Button = React.forwardRef<
   React.ElementRef<typeof Pressable>,
