@@ -21,12 +21,12 @@ export class Timespan {
   }
 
   /**
-   * Returns the duration of the timespan in milliseconds.
+   * Returns the duration of the timespan in milliseconds. Min 0
    */
   get duration(): number {
     return this.end
-      ? this.end.getTime() - this.start.getTime()
-      : new Date().getTime() - this.start.getTime();
+      ? Math.max(this.end.getTime() - this.start.getTime(), 0)
+      : Math.max(new Date().getTime() - this.start.getTime(), 0);
   }
 
   get logicalDate(): DateOnly {

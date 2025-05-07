@@ -3,37 +3,33 @@ import { Timespan } from './timespan';
 
 export class Activity {
   private timespan: Timespan;
-  private _category: Category;
-  private summary: string;
-  private _id: string;
+  readonly category: Category;
+  readonly summary: string;
+  id: string;
+  next: Activity | undefined;
+  previous: Activity | undefined;
 
   constructor({
     timespan,
     category,
     summary = '',
     id = '',
+    next = undefined,
+    previous = undefined,
   }: {
     timespan: Timespan;
     category: Category;
     summary?: string;
     id?: string;
+    next?: Activity | undefined;
+    previous?: Activity | undefined;
   }) {
     this.timespan = timespan;
-    this._category = category;
+    this.category = category;
     this.summary = summary;
-    this._id = id;
-  }
-
-  get id() {
-    return this._id;
-  }
-
-  set id(val) {
-    this._id = val;
-  }
-
-  get category() {
-    return this._category;
+    this.id = id;
+    this.next = next;
+    this.previous = previous;
   }
 
   get duration() {
@@ -62,6 +58,21 @@ export class Activity {
       throw new Error('Activity is already completed');
     }
     this.timespan.end = endTime;
+  }
+
+  cloneWith({ start, end }: { start?: Date; end?: Date | undefined }) {
+    return new Activity({
+      timespan: Timespan.create(
+        start || this.start,
+        this.logicalDate,
+        end || this.end
+      ),
+      category: Category.create(this.category.name, this.category.id),
+      summary: this.summary,
+      id: this.id,
+      next: this.next,
+      previous: this.previous,
+    });
   }
 
   toString(): string {

@@ -13,23 +13,23 @@ import {
 import { Text } from '@/components/ui/text';
 
 export function DialogComponent({
-  isEnabled,
   buttonText,
   description,
   dialogTitle,
-  confirmationText = 'Yes',
   onConfirm,
+  isEnabled = true,
+  confirmationText = 'Yes',
   buttonVariant = {
     variant: 'default',
     size: 'default',
   },
 }: {
-  isEnabled: boolean;
   buttonText: string;
   description: string;
   dialogTitle: string;
-  confirmationText?: string;
   onConfirm: () => void;
+  isEnabled?: boolean;
+  confirmationText?: string;
   buttonVariant?: ButtonVariants;
 }) {
   return (

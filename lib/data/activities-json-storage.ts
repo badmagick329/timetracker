@@ -1,4 +1,5 @@
 import * as FileSystem from 'expo-file-system';
+import { ActivityIcon } from 'lucide-react-native';
 import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
 import { DateOnly } from '@/lib/core/date-only';
@@ -53,7 +54,18 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
   async updateActivity(activity: Activity): Promise<boolean> {
     const index = this._activities.findIndex((a) => a.id === activity.id);
     if (index !== -1) {
-      this._activities[index] = activity;
+      this._activities[index] = new Activity({
+        timespan: Timespan.create(
+          activity.start,
+          activity.logicalDate,
+          activity.end
+        ),
+        category: Category.create(activity.category.name, activity.category.id),
+        summary: activity.summary,
+        id: activity.id,
+        next: activity.next,
+        previous: activity.previous,
+      });
       console.log('Activity updated:', activity);
       await this.save();
       return true;
@@ -85,21 +97,19 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
       const activities = JSON.parse(fileContent) as JsonParsedActivity[];
       // console.log('parsed data', activities);
 
-      const loaded = activities.map((activity) => {
-        const { start, end, logicalDate } = activity.timespan;
+      const loaded = activities.map((activity, idx) => {
+        const created = ActivitiesJsonStorage.jsonToInstance(activity);
+        if (idx > 0) {
+          created.previous = ActivitiesJsonStorage.jsonToInstance(
+            activities[idx - 1]
+          );
+        }
+        if (idx < activities.length - 1) {
+          created.next = ActivitiesJsonStorage.jsonToInstance(
+            activities[idx + 1]
+          );
+        }
 
-        const created = new Activity({
-          timespan: Timespan.create(
-            new Date(start),
-            new DateOnly(new Date(logicalDate)),
-            end !== '' ? new Date(end) : undefined
-          ),
-          category: Category.create(
-            activity.category.name,
-            activity.category.id
-          ),
-          id: activity.id,
-        });
         return created;
       });
       console.log(`Loaded ${loaded.length} activities`);
@@ -114,11 +124,23 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
   private async save(): Promise<void> {
     try {
       const fileContent = JSON.stringify(this._activities);
-      console.log('Saving\n', fileContent);
+      // console.log('Saving\n', fileContent);
       await FileSystem.writeAsStringAsync(this.saveFile, fileContent);
       console.log('Activities saved to file:', this.saveFile);
     } catch (error) {
       console.error('Error saving activities to file:', error);
     }
+  }
+
+  private static jsonToInstance(parsed: JsonParsedActivity) {
+    return new Activity({
+      timespan: Timespan.create(
+        new Date(parsed.timespan.start),
+        new DateOnly(new Date(parsed.timespan.logicalDate)),
+        parsed.timespan.end !== '' ? new Date(parsed.timespan.end) : undefined
+      ),
+      category: Category.create(parsed.category.name, parsed.category.id),
+      id: parsed.id,
+    });
   }
 }

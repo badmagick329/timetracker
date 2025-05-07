@@ -26,6 +26,7 @@ type ActivityActions = {
     params: CreateActivityParams
   ) => Promise<Activity | undefined>;
   completeActivity: (endTime: Date) => Promise<string | undefined>;
+  updateActivity: (activity: Activity) => Promise<boolean | undefined>;
   removeActivity: (activity: Activity) => Promise<string | undefined>;
   resetAll: () => Promise<void>;
 };
@@ -135,6 +136,34 @@ export const useActivityStore = create(
         activitiesByDate: manager.groupByLogicalDate(),
       });
       return completedId;
+    },
+
+    updateActivity: async (
+      activity: Activity
+    ): Promise<boolean | undefined> => {
+      const { activityManager: manager } = get();
+      if (!manager) {
+        console.log(
+          'Cannot update activity: Activity Manager not initialized.'
+        );
+        return undefined;
+      }
+
+      try {
+        const isUpdated = await manager.updateActivity(activity);
+        if (isUpdated) {
+          set({
+            activities: [...manager.getActivities()],
+            activityInProgress: manager.activityInProgress,
+            lastCompletedActivity: manager.getLastCompletedActivity(),
+            activitiesByDate: manager.groupByLogicalDate(),
+          });
+        }
+        return isUpdated;
+      } catch (error) {
+        console.log('Failed to update activity:', error);
+        return undefined;
+      }
     },
 
     removeActivity: async (activity: Activity) => {
