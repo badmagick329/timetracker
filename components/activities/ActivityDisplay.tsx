@@ -1,19 +1,10 @@
+import clsx from 'clsx';
 import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
 import { Pressable } from 'react-native-gesture-handler';
 import { Activity } from '@/lib/core/activity';
 import { formatDurationWithUnits, titleCase } from '@/lib/utils/index';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
@@ -41,126 +32,145 @@ export function ActivityDisplay({ activity }: { activity: Activity }) {
       </View>
       <View className='flex w-full flex-row justify-between gap-8'>
         <View className='flex flex-row items-center gap-2'>
-          <StartDisplay activity={activity} />
+          <ActivityTime activity={activity} timeType='start' />
           <Text>-</Text>
-          <EndDisplay activity={activity} />
+          <ActivityTime activity={activity} timeType='end' />
         </View>
       </View>
     </View>
   );
 }
 
-function StartDisplay({ activity }: { activity: Activity }) {
-  const dateWithTime = new Date();
-  dateWithTime.setTime(activity.start.getTime());
+function ActivityTime({
+  activity,
+  timeType,
+}: {
+  activity: Activity;
+  timeType: 'start' | 'end';
+}) {
+  const defaultDate = new Date();
+  let hours, minutes, seconds;
+  let modalTitle;
 
-  const [date, setDate] = useState<Date>(dateWithTime);
-  const [startHours, startMinutes, startSeconds] = activity.start
-    .toLocaleTimeString()
-    .split(':');
+  if (timeType === 'start') {
+    defaultDate.setTime(activity.start.getTime());
+    [hours, minutes, seconds] = activity.start.toLocaleTimeString().split(':');
+    modalTitle = 'Edit Start Time';
+  } else {
+    activity.end && defaultDate.setTime(activity.end.getTime());
+    [hours, minutes, seconds] = activity.end
+      ? activity.end.toLocaleTimeString().split(':')
+      : [undefined, undefined, undefined];
+    modalTitle = 'Edit End Time';
+  }
+
+  const [date, setDate] = useState<Date>(defaultDate);
+  const [open, setOpen] = useState(false);
+
   const updateActivity = useActivityStore((state) => state.updateActivity);
+  const handleConfirm = createConfirmHandler({
+    activity,
+    updateActivity,
+    setDate,
+    setOpen,
+    source: timeType,
+  });
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Pressable>
-          <Text className='w-16 rounded-md bg-primary/40 px-2 py-1 text-center'>
-            {startHours}:{startMinutes}
-          </Text>
-        </Pressable>
-      </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
-          <DialogTitle>Edit Start</DialogTitle>
-          <DialogDescription>
-            Pick a start time for this activity
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <DialogClose asChild>
-            <DatePicker
-              date={date}
-              mode='time'
-              onDateChange={async (date) => {
-                console.log(`Setting date to ${date}`);
-                setDate(date);
-                // TODO: Refactor
-                let minStart = activity?.previous?.end;
-                let newStart = new Date(activity.start);
-                newStart.setTime(date.getTime());
-                if (minStart && newStart < minStart) {
-                  newStart = minStart;
-                }
-                if (activity.start === newStart) return;
-
-                await updateActivity(activity.cloneWith({ start: newStart }));
-              }}
-            />
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <View className='flex flex-col gap-4'>
+      <Pressable
+        onPress={() => {
+          setOpen(true);
+        }}
+      >
+        <Text
+          className={clsx(
+            'w-16 rounded-md px-2 py-1 text-center',
+            timeType === 'start' ? 'bg-primary/40' : 'bg-destructive/40'
+          )}
+        >
+          {hours}:{minutes}
+        </Text>
+      </Pressable>
+      <DatePicker
+        modal
+        title={modalTitle}
+        date={date}
+        open={open}
+        mode='time'
+        onConfirm={handleConfirm}
+        onCancel={() => {
+          setOpen(false);
+        }}
+      />
+    </View>
   );
 }
 
-function EndDisplay({ activity }: { activity: Activity }) {
-  const dateWithTime = new Date();
-  activity.end && dateWithTime.setTime(activity.end.getTime());
+function createConfirmHandler({
+  activity,
+  updateActivity,
+  setDate,
+  setOpen,
+  source,
+}: {
+  activity: Activity;
+  updateActivity: (activity: Activity) => Promise<boolean | undefined>;
+  setDate: (date: Date) => void;
+  setOpen: (open: boolean) => void;
+  source: 'start' | 'end';
+}) {
+  return async (selectedDate: Date) => {
+    try {
+      if (source === 'start') {
+        let minStart = activity?.previous?.end;
+        let newStart = new Date(activity.start);
+        newStart.setTime(selectedDate.getTime());
 
-  const [date, setDate] = useState<Date>(dateWithTime);
-  const [endHours, endMinutes, endSeconds] = activity.end
-    ? activity.end.toLocaleTimeString().split(':')
-    : [undefined, undefined, undefined];
-  const updateActivity = useActivityStore((state) => state.updateActivity);
+        if (minStart && newStart < minStart) {
+          newStart = minStart;
+          setDate(newStart);
+        } else {
+          setDate(selectedDate);
+        }
 
-  if (!activity.end) {
-    return (
-      <View className='flex flex-row justify-center px-6'>
-        <View className='h-3 w-3 animate-bounce rounded-full border-2 border-destructive/60 bg-destructive/20'></View>
-      </View>
-    );
-  }
+        if (activity.start.getTime() === newStart.getTime()) {
+          return;
+        }
 
-  return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Pressable>
-          <Text className='w-16 rounded-md bg-destructive/40 px-2 py-1 text-center'>
-            {endHours}:{endMinutes}
-          </Text>
-        </Pressable>
-      </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
-          <DialogTitle>Edit end</DialogTitle>
-          <DialogDescription>
-            Pick a end time for this activity
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <DialogClose asChild>
-            <DatePicker
-              date={date}
-              mode='time'
-              onDateChange={async (date) => {
-                if (!activity.end) return;
-                setDate(date);
+        const success = await updateActivity(
+          activity.cloneWith({ start: newStart })
+        );
+        if (!success) {
+          setDate(activity.start);
+        }
+      } else {
+        if (!activity.end) {
+          return;
+        }
 
-                let maxEnd = activity?.next?.start;
-                let newEnd = new Date(activity.end);
-                newEnd.setTime(date.getTime());
-                if (maxEnd && newEnd > maxEnd) {
-                  newEnd = maxEnd;
-                }
+        setDate(selectedDate);
+        let maxEnd = activity?.next?.start;
+        let newEnd = new Date(activity.end);
+        newEnd.setTime(selectedDate.getTime());
+        if (maxEnd && newEnd > maxEnd) {
+          newEnd = maxEnd;
+        }
 
-                if (activity.end === newEnd) return;
+        if (activity.end === newEnd) {
+          return;
+        }
 
-                await updateActivity(activity.cloneWith({ end: newEnd }));
-              }}
-            />
-          </DialogClose>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
+        const success = await updateActivity(
+          activity.cloneWith({ end: newEnd })
+        );
+
+        if (!success && activity.end) {
+          setDate(activity.end);
+        }
+      }
+    } finally {
+      setOpen(false);
+    }
+  };
 }

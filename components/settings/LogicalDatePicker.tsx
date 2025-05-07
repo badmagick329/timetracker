@@ -53,9 +53,7 @@ export function LogicalDatePicker() {
               });
             })();
           }}
-          onCancel={() => {
-            setOpen(false);
-          }}
+          onCancel={() => setOpen(false)}
         />
       ) : (
         <Text>No Date...</Text>
