@@ -20,6 +20,8 @@ export function useActivity() {
     (state) => state.activityInProgress
   );
   const isInitialized = useActivityStore((state) => state.isInitialized);
+
+  // TODO: Refactor
   useEffect(() => {
     setCanStart(
       isInitialized &&
@@ -40,6 +42,7 @@ export function useActivity() {
     selectedCategory,
     setSelectedCategory,
   ]);
+
   return {
     canStart,
     canEnd,

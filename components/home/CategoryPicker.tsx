@@ -23,27 +23,26 @@ export function CategoryPicker({
   onValueChange: (option: DisplayedCategory | undefined) => void;
   selectedCategory?: Category;
 }) {
+  let defaultCategory;
+  const match = displayedCategories.find(
+    (c) => c.value === selectedCategory?.id
+  );
+  if (match) {
+    defaultCategory = match;
+  } else {
+    defaultCategory = {
+      label: 'Select a category',
+      value: '',
+    };
+  }
+
   const [selectedDisplayedCategory, setSelectedDisplayedCategory] = useState<
     DisplayedCategory | undefined
-  >(undefined);
+  >(defaultCategory);
   const activityInProgress = useActivityStore(
     (state) => state.activityInProgress
   );
   const canStart = activityInProgress === undefined;
-
-  useEffect(() => {
-    const match = displayedCategories.find(
-      (c) => c.value === selectedCategory?.id
-    );
-    if (match) {
-      setSelectedDisplayedCategory(match);
-    } else {
-      setSelectedDisplayedCategory({
-        label: 'Select a category',
-        value: '',
-      });
-    }
-  }, [selectedCategory, displayedCategories]);
 
   const insets = useSafeAreaInsets();
   const contentInsets = {
@@ -58,7 +57,13 @@ export function CategoryPicker({
   }
 
   return (
-    <Select onValueChange={onValueChange} value={selectedDisplayedCategory}>
+    <Select
+      onValueChange={(option) => {
+        onValueChange(option);
+        setSelectedDisplayedCategory(option);
+      }}
+      value={selectedDisplayedCategory}
+    >
       <SelectTrigger
         className='w-full bg-muted-foreground/20'
         disabled={!canStart}

@@ -24,26 +24,11 @@ export function LogicalDatePicker() {
     setDate(logicalDateCutOff.toDate());
   }, [settingsIsInitialized]);
 
-  useEffect(() => {
-    if (!date) {
-      return;
-    }
-    if (TimeOnly.fromDate(date) === logicalDateCutOff) {
-      return;
-    }
-
-    (async () => {
-      await saveChanges({
-        logicalDateCutOff: TimeOnly.fromDate(date),
-      });
-    })();
-  }, [date]);
-
   return (
     <>
       <Button className='w-full bg-primary/60' onPress={() => setOpen(true)}>
         <Text>
-          Pick logical date cut off [{logicalDateCutOff!.toHourAndMinutes()}]
+          Pick logical date cut off [{logicalDateCutOff.toHourAndMinutes()}]
         </Text>
       </Button>
 
@@ -54,8 +39,19 @@ export function LogicalDatePicker() {
           date={date}
           mode='time'
           onConfirm={(date) => {
-            setOpen(false);
-            setDate(date);
+            (async () => {
+              setOpen(false);
+              setDate(date);
+              if (!date) {
+                return;
+              }
+              if (TimeOnly.fromDate(date) === logicalDateCutOff) {
+                return;
+              }
+              await saveChanges({
+                logicalDateCutOff: TimeOnly.fromDate(date),
+              });
+            })();
           }}
           onCancel={() => {
             setOpen(false);
