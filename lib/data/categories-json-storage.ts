@@ -22,13 +22,13 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
 
     if (categories.length === 0) {
       categories.push(
+        Category.create('gaming', CategoriesJsonStorage.toKey('gaming'))
+      );
+      categories.push(
         Category.create('study', CategoriesJsonStorage.toKey('study'))
       );
       categories.push(
         Category.create('workout', CategoriesJsonStorage.toKey('workout'))
-      );
-      categories.push(
-        Category.create('gaming', CategoriesJsonStorage.toKey('gaming'))
       );
       await this.saveData(saveFile, categories);
     }
@@ -53,6 +53,7 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
     this._categories.push(category);
     category.id = CategoriesJsonStorage.toKey(category.name);
     console.log('Category added:', category);
+    CategoriesJsonStorage.sortInPlace(this.categories);
     await this.save();
     return category.id;
   }
@@ -66,6 +67,7 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
 
     this._categories.splice(index, 1);
     console.log('Category removed:', categoryId);
+    CategoriesJsonStorage.sortInPlace(this.categories);
     await this.save();
     return categoryId;
   }
@@ -103,6 +105,7 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
       });
       // console.log(`Loaded ${loaded.length} categories`);
 
+      CategoriesJsonStorage.sortInPlace(loaded);
       return loaded;
     } catch (error) {
       console.error('Error loading categories from file:', error);
@@ -129,5 +132,9 @@ export class CategoriesJsonStorage implements ICategoriesRepository {
 
   private static toKey(name: string): string {
     return `${name}__${new Date()}`;
+  }
+
+  private static sortInPlace(categories: Category[]): void {
+    categories.sort((a, b) => a.name.localeCompare(b.name));
   }
 }
