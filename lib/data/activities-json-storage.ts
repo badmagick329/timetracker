@@ -1,5 +1,5 @@
 import * as FileSystem from 'expo-file-system';
-import { ActivityIcon } from 'lucide-react-native';
+import * as Sharing from 'expo-sharing';
 import { Activity } from '@/lib/core/activity';
 import { Category } from '@/lib/core/category';
 import { DateOnly } from '@/lib/core/date-only';
@@ -8,23 +8,22 @@ import { Timespan } from '@/lib/core/timespan';
 import { JsonParsedActivity } from '@/lib/types';
 
 export class ActivitiesJsonStorage implements IActivitiesRepository {
-  private saveFile: string;
+  private static readonly saveDir = `${FileSystem.documentDirectory}Json/`;
+  private static readonly saveFile = `${ActivitiesJsonStorage.saveDir}activities.json`;
+
   private _activities: Activity[];
 
-  private constructor(saveFile: string, activities: Activity[]) {
-    this.saveFile = saveFile;
+  private constructor(activities: Activity[]) {
     this._activities = activities;
   }
 
   static async create(): Promise<ActivitiesJsonStorage> {
-    const saveDir = `${FileSystem.documentDirectory}Json/`;
-    const saveFile = `${saveDir}activities.json`;
-    await FileSystem.makeDirectoryAsync(saveDir, {
+    await FileSystem.makeDirectoryAsync(ActivitiesJsonStorage.saveDir, {
       intermediates: true,
     });
-    const activities = await this.load(saveFile);
+    const activities = await this.load();
 
-    return new ActivitiesJsonStorage(saveFile, activities);
+    return new ActivitiesJsonStorage(activities);
   }
 
   get activities(): Activity[] {
@@ -78,21 +77,36 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
   async resetAll(): Promise<void> {
     this._activities = [];
     try {
-      await FileSystem.deleteAsync(this.saveFile, { idempotent: true });
-      console.log('All activities reset and file deleted:', this.saveFile);
+      await FileSystem.deleteAsync(ActivitiesJsonStorage.saveFile, {
+        idempotent: true,
+      });
+      console.log(
+        'All activities reset and file deleted:',
+        ActivitiesJsonStorage.saveFile
+      );
     } catch (error) {
       console.error('Error resetting activities:', error);
     }
   }
 
-  private static async load(saveFile: string): Promise<Activity[]> {
-    const info = await FileSystem.getInfoAsync(saveFile);
+  static async exportJsonData() {
+    if (await Sharing.isAvailableAsync()) {
+      await Sharing.shareAsync(ActivitiesJsonStorage.saveFile);
+    } else {
+      alert('Sharing is not available on this device');
+    }
+  }
+
+  private static async load(): Promise<Activity[]> {
+    const info = await FileSystem.getInfoAsync(ActivitiesJsonStorage.saveFile);
     if (!info.exists) {
       return [];
     }
 
     try {
-      const fileContent = await FileSystem.readAsStringAsync(saveFile);
+      const fileContent = await FileSystem.readAsStringAsync(
+        ActivitiesJsonStorage.saveFile
+      );
       // console.log(`File contents read:\n${fileContent}`);
       const activities = JSON.parse(fileContent) as JsonParsedActivity[];
       // console.log('parsed data', activities);
@@ -125,8 +139,11 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
     try {
       const fileContent = JSON.stringify(this._activities);
       // console.log('Saving\n', fileContent);
-      await FileSystem.writeAsStringAsync(this.saveFile, fileContent);
-      console.log('Activities saved to file:', this.saveFile);
+      await FileSystem.writeAsStringAsync(
+        ActivitiesJsonStorage.saveFile,
+        fileContent
+      );
+      console.log('Activities saved to file:', ActivitiesJsonStorage.saveFile);
     } catch (error) {
       console.error('Error saving activities to file:', error);
     }
