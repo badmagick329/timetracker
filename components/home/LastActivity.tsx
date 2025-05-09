@@ -1,3 +1,4 @@
+import { View } from 'react-native';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { animationDuration } from '@/lib/constants';
 import {
@@ -15,6 +16,37 @@ import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
 export function LastActivity() {
+  const activity = useActivityStore((state) => state.lastCompletedActivity);
+
+  if (!activity) {
+    return null;
+  }
+
+  if (activity.duration === undefined) {
+    console.error('Activity duration is undefined');
+    return null;
+  }
+
+  return (
+    <View key='last'>
+      <ActivityCardWrapper>
+        <ActivityCardHeader>
+          <Text className='text-xl font-bold'>
+            {titleCase(activity.category.name)}
+          </Text>
+          <Text className='text-sm font-bold text-muted-foreground'>
+            {formatDurationWithUnits(activity.duration)}
+          </Text>
+        </ActivityCardHeader>
+        <ActivityCardContent>
+          <ActivityBar startTime={activity.start} endTime={activity.end} />
+        </ActivityCardContent>
+      </ActivityCardWrapper>
+    </View>
+  );
+}
+
+export function LastActivityAnimated() {
   const activity = useActivityStore((state) => state.lastCompletedActivity);
 
   if (!activity) {

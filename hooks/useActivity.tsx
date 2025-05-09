@@ -6,10 +6,6 @@ export function useActivity() {
   const [selectedCategory, setSelectedCategory] = useState<
     Category | undefined
   >(undefined);
-  const [canStart, setCanStart] = useState(false);
-  const [canEnd, setCanEnd] = useState(false);
-  const [canEndFromPreviousActivity, setCanEndFromPreviousActivity] =
-    useState(false);
 
   const createActivity = useActivityStore((state) => state.createActivity);
   const lastCompletedActivity = useActivityStore(
@@ -21,32 +17,17 @@ export function useActivity() {
   );
   const isInitialized = useActivityStore((state) => state.isInitialized);
 
-  // TODO: Refactor
-  useEffect(() => {
-    setCanStart(
-      isInitialized &&
-        activityInProgress === undefined &&
-        selectedCategory !== undefined
-    );
-    setCanEnd(isInitialized && activityInProgress !== undefined);
-    setCanEndFromPreviousActivity(
-      isInitialized &&
-        activityInProgress === undefined &&
-        lastCompletedActivity !== undefined &&
-        selectedCategory !== undefined
-    );
-  }, [
-    isInitialized,
-    activityInProgress,
-    lastCompletedActivity,
-    selectedCategory,
-    setSelectedCategory,
-  ]);
-
   return {
-    canStart,
-    canEnd,
-    canEndFromPreviousActivity,
+    canStart:
+      isInitialized &&
+      activityInProgress === undefined &&
+      selectedCategory !== undefined,
+    canEnd: isInitialized && activityInProgress !== undefined,
+    canEndFromPreviousActivity:
+      isInitialized &&
+      activityInProgress === undefined &&
+      lastCompletedActivity !== undefined &&
+      selectedCategory !== undefined,
     createActivity,
     completeActivity,
     selectedCategory,

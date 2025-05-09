@@ -31,9 +31,13 @@ export class ActivitiesJsonStorage implements IActivitiesRepository {
   }
 
   async addActivity(activity: Activity): Promise<string> {
+    const start = performance.now();
     this._activities.push(activity);
     activity.id = activity.start.toString();
     await this.save();
+    console.log(
+      `[ActivitiesJsonStorage] - Add activity took ${performance.now() - start} milliseconds`
+    );
     return activity.id;
   }
 

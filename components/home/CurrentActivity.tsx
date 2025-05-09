@@ -39,7 +39,73 @@ export function CurrentActivity() {
   if (!activityInProgress) {
     const showPlaceholder = false;
     return showPlaceholder ? (
-      <ActivityCardWrapper className='shadow-glow-success border-4 border-success/60 bg-background'>
+      <ActivityCardWrapper className='border-4 border-success/60 bg-background shadow-glow-success'>
+        <ActivityCardHeader>
+          <Text className='text-xl font-bold'>{'Placeholder'}</Text>
+          <Text className='text-sm text-muted-foreground'>
+            {formatDurationWithUnits(50000)}
+          </Text>
+        </ActivityCardHeader>
+        <ActivityCardContent>
+          <ActivityBar
+            endTimeEmptyContent={
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/60 bg-destructive/20'></View>
+            }
+            startTime={new Date()}
+          />
+        </ActivityCardContent>
+      </ActivityCardWrapper>
+    ) : null;
+  }
+
+  return (
+    <View key={activityInProgress.id}>
+      <ActivityCardWrapper className='border-4 border-success/60 bg-background shadow-glow-success'>
+        <ActivityCardHeader>
+          <Text className='text-xl font-bold'>
+            {titleCase(activityInProgress.category.name)}
+          </Text>
+          <Text className='text-sm text-muted-foreground'>
+            {formatDurationWithUnits(duration)}
+          </Text>
+        </ActivityCardHeader>
+        <ActivityCardContent>
+          <ActivityBar
+            endTimeEmptyContent={
+              <View className='h-5 w-5 animate-bounce rounded-full border-2 border-destructive/60 bg-destructive/20'></View>
+            }
+            startTime={activityInProgress.start}
+          />
+        </ActivityCardContent>
+      </ActivityCardWrapper>
+    </View>
+  );
+}
+
+export function CurrentActivityAnimated() {
+  const [duration, setDuration] = useState(0); // in milliseconds
+  const activityInProgress = useActivityStore(
+    (state) => state.activityInProgress
+  );
+
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+
+    if (activityInProgress) {
+      interval = setInterval(() => {
+        setDuration(activityInProgress.duration);
+      }, 100);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [activityInProgress]);
+
+  if (!activityInProgress) {
+    const showPlaceholder = false;
+    return showPlaceholder ? (
+      <ActivityCardWrapper className='border-4 border-success/60 bg-background shadow-glow-success'>
         <ActivityCardHeader>
           <Text className='text-xl font-bold'>{'Placeholder'}</Text>
           <Text className='text-sm text-muted-foreground'>
@@ -66,7 +132,7 @@ export function CurrentActivity() {
       layout={cardSpringify()}
       collapsable={false}
     >
-      <ActivityCardWrapper className='shadow-glow-success border-4 border-success/60 bg-background'>
+      <ActivityCardWrapper className='border-4 border-success/60 bg-background shadow-glow-success'>
         <ActivityCardHeader>
           <Text className='text-xl font-bold'>
             {titleCase(activityInProgress.category.name)}
