@@ -1,11 +1,20 @@
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Pressable, View } from 'react-native';
 import DatePicker from 'react-native-date-picker';
-import { Pressable } from 'react-native-gesture-handler';
 import { Activity } from '@/lib/core/activity';
 import { formatDurationWithUnits, titleCase } from '@/lib/utils/index';
 import { DialogComponent } from '@/components/ui/DialogComponent';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
@@ -83,6 +92,7 @@ function ActivityTime({
 
   const [date, setDate] = useState<Date>(new Date());
   const [open, setOpen] = useState(false);
+  const [ioInProgress, setIoInProgress] = useState(false);
 
   const updateActivity = useActivityStore((state) => state.updateActivity);
   const handleConfirm = createConfirmHandler({
@@ -95,36 +105,63 @@ function ActivityTime({
 
   return (
     <View className='flex flex-col gap-4'>
-      <Pressable
-        onPress={() => {
-          setOpen(true);
-          if (timeType === 'start') {
-            setDate(activity.start);
+      <Dialog
+        onOpenChange={(opened) => {
+          if (opened) {
+            if (timeType === 'start') {
+              setDate(activity.start);
+              setOpen(true);
+            } else {
+              activity.end && setDate(activity.end);
+              setOpen(true);
+            }
           } else {
-            activity.end && setDate(activity.end);
+            setOpen(false);
           }
         }}
-      >
-        <Text
-          className={clsx(
-            'w-16 rounded-md px-2 py-1 text-center',
-            timeType === 'start' ? 'bg-primary/40' : 'bg-destructive/40'
-          )}
-        >
-          {hours}:{minutes}
-        </Text>
-      </Pressable>
-      <DatePicker
-        modal
-        title={modalTitle}
-        date={date}
         open={open}
-        mode='time'
-        onConfirm={handleConfirm}
-        onCancel={() => {
-          setOpen(false);
-        }}
-      />
+      >
+        <DialogTrigger asChild>
+          <Pressable disabled={ioInProgress}>
+            <Text
+              className={clsx(
+                'w-16 rounded-md px-2 py-1 text-center',
+                timeType === 'start' ? 'bg-primary/40' : 'bg-destructive/40'
+              )}
+            >
+              {hours}:{minutes}
+            </Text>
+          </Pressable>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{modalTitle}</DialogTitle>
+          </DialogHeader>
+          <DatePicker date={date} mode='time' onDateChange={setDate} />
+          <DialogFooter>
+            <DialogClose asChild>
+              <View className='flex flex-row justify-end'>
+                <Button
+                  variant={'outline'}
+                  onPress={async () => {
+                    try {
+                      setIoInProgress(true);
+                      await handleConfirm(date);
+                    } catch (error) {
+                      console.error(error);
+                    } finally {
+                      setIoInProgress(false);
+                    }
+                  }}
+                  disabled={ioInProgress}
+                >
+                  <Text>Confirm</Text>
+                </Button>
+              </View>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </View>
   );
 }
@@ -185,20 +222,14 @@ function createConfirmHandler({
 
         setDate(selectedDate);
         let maxEnd = activity?.next?.start || new Date();
-        console.log('maxend is', maxEnd);
-        console.log('minend is', activity.start);
         let newEnd = new Date(activity.end);
         newEnd.setTime(selectedDate.getTime());
         if (newEnd < activity.start) {
-          console.log('new end below start. setting it to start');
           newEnd = new Date(activity.start);
           newEnd.setTime(newEnd.getTime() + 1);
-          console.log('new end is', newEnd);
           setDate(newEnd);
         } else if (maxEnd && newEnd > maxEnd) {
-          console.log('new end above max end. setting it to max end');
           newEnd = maxEnd;
-          console.log('new end is', newEnd);
           setDate(newEnd);
         }
 
