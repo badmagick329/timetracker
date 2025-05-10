@@ -68,23 +68,20 @@ function ActivityTime({
   activity: Activity;
   timeType: 'start' | 'end';
 }) {
-  const defaultDate = new Date();
   let hours, minutes, seconds;
   let modalTitle;
 
   if (timeType === 'start') {
-    defaultDate.setTime(activity.start.getTime());
     [hours, minutes, seconds] = activity.start.toLocaleTimeString().split(':');
     modalTitle = 'Edit Start Time';
   } else {
-    activity.end && defaultDate.setTime(activity.end.getTime());
     [hours, minutes, seconds] = activity.end
       ? activity.end.toLocaleTimeString().split(':')
       : [undefined, undefined, undefined];
     modalTitle = 'Edit End Time';
   }
 
-  const [date, setDate] = useState<Date>(defaultDate);
+  const [date, setDate] = useState<Date>(new Date());
   const [open, setOpen] = useState(false);
 
   const updateActivity = useActivityStore((state) => state.updateActivity);
@@ -101,6 +98,11 @@ function ActivityTime({
       <Pressable
         onPress={() => {
           setOpen(true);
+          if (timeType === 'start') {
+            setDate(activity.start);
+          } else {
+            activity.end && setDate(activity.end);
+          }
         }}
       >
         <Text
