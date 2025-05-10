@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Category } from '@/lib/core/category';
@@ -73,8 +73,8 @@ export function CategoryPicker({
           placeholder='Select a category'
         />
       </SelectTrigger>
-      <SelectContent insets={contentInsets} className='w-full'>
-        <ScrollView className='max-h-[25vh]'>
+      <SelectContent insets={contentInsets} className='max-h-[80vh] w-full'>
+        <ScrollView>
           <SelectGroup>
             {displayedCategories.map((c) => {
               return (
