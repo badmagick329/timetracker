@@ -57,18 +57,19 @@ export function CurrentActivityControl() {
     setSelectedCategory(foundCategory);
   };
 
-  const handleEndFromLastActivity = async () => {
-    if (!logicalDateCutOff) {
-      console.log('No logicalDateCutOff found');
-      return;
-    }
+  // NOTE: Removed after End from last activity button was removed
+  // const handleEndFromLastActivity = async () => {
+  //   if (!logicalDateCutOff) {
+  //     console.log('No logicalDateCutOff found');
+  //     return;
+  //   }
 
-    console.log('Last Activity:', lastCompletedActivity);
-    await handleEnd({
-      customStart: lastCompletedActivity?.end,
-      logicalDateCutOff,
-    });
-  };
+  //   console.log('Last Activity:', lastCompletedActivity);
+  //   await handleEnd({
+  //     customStart: lastCompletedActivity?.end,
+  //     logicalDateCutOff,
+  //   });
+  // };
 
   const handleStartFromLastActivity = async () => {
     if (!logicalDateCutOff) {
