@@ -136,16 +136,6 @@ export function CurrentActivityControl() {
           )}
         </View>
       </View>
-      <View className='flex w-full flex-row items-center justify-start gap-8 px-8'>
-        <Button
-          className='w-64'
-          variant={'accent'}
-          disabled={!canEndFromPreviousActivity || ioInProgress}
-          onPress={handleEndFromLastActivity}
-        >
-          <Text>End from last activity</Text>
-        </Button>
-      </View>
     </View>
   );
 }
