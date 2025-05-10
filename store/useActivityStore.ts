@@ -175,7 +175,7 @@ export const useActivityStore = create(
         return undefined;
       }
       try {
-        const removed = await manager.removeActivity(activity.toString());
+        const removed = await manager.removeActivity(activity.id);
         if (removed) {
           set({
             activities: [...manager.getActivities()],

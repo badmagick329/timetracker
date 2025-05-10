@@ -5,11 +5,15 @@ import DatePicker from 'react-native-date-picker';
 import { Pressable } from 'react-native-gesture-handler';
 import { Activity } from '@/lib/core/activity';
 import { formatDurationWithUnits, titleCase } from '@/lib/utils/index';
+import { DialogComponent } from '@/components/ui/DialogComponent';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
 export function ActivityDisplay({ activity }: { activity: Activity }) {
   const [duration, setDuration] = useState(0);
+  const removeActivity = useActivityStore((state) => state.removeActivity);
+  const [ioInProgress, setIoInProgress] = useState(false);
+
   useEffect(() => {
     if (activity.end) {
       setDuration(activity.duration);
@@ -36,6 +40,22 @@ export function ActivityDisplay({ activity }: { activity: Activity }) {
           <Text>-</Text>
           <ActivityTime activity={activity} timeType='end' />
         </View>
+        <DialogComponent
+          buttonText='Delete'
+          description='Are you sure you want to delete this activity? This action cannot be undone.'
+          dialogTitle='Confirm Delete'
+          confirmationText='Yes'
+          isEnabled={!ioInProgress}
+          buttonVariant={{ variant: 'outline' }}
+          onConfirm={async () => {
+            try {
+              setIoInProgress(true);
+              await removeActivity(activity);
+            } finally {
+              setIoInProgress(false);
+            }
+          }}
+        />
       </View>
     </View>
   );
@@ -146,6 +166,7 @@ function createConfirmHandler({
         }
       } else {
         if (!activity.end) {
+          console.log(`No end found for ${activity} returning`);
           return;
         }
 
@@ -158,12 +179,18 @@ function createConfirmHandler({
         }
 
         if (activity.end === newEnd) {
+          console.log(`No changes for ${activity} returning`);
           return;
         }
 
         const success = await updateActivity(
           activity.cloneWith({ end: newEnd })
         );
+        if (success) {
+          console.log(`Updated ${activity} to ${newEnd}`);
+        } else {
+          console.log(`Failed to update ${activity} to ${newEnd}`);
+        }
 
         if (!success && activity.end) {
           setDate(activity.end);
