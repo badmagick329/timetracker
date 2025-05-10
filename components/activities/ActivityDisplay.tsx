@@ -146,17 +146,28 @@ function createConfirmHandler({
     try {
       if (source === 'start') {
         let minStart = activity?.previous?.end;
+        let maxStart = undefined;
+        if (activity.end) {
+          maxStart = activity.end;
+        } else if (activity.next?.start) {
+          maxStart = activity.next.start;
+        }
+
         let newStart = new Date(activity.start);
         newStart.setTime(selectedDate.getTime());
 
         if (minStart && newStart < minStart) {
           newStart = minStart;
           setDate(newStart);
+        } else if (maxStart && newStart > maxStart) {
+          newStart = maxStart;
+          setDate(newStart);
         } else {
           setDate(selectedDate);
         }
 
         if (activity.start.getTime() === newStart.getTime()) {
+          console.log(`No changes for ${activity} returning`);
           return;
         }
 
@@ -173,14 +184,25 @@ function createConfirmHandler({
         }
 
         setDate(selectedDate);
-        let maxEnd = activity?.next?.start;
+        let maxEnd = activity?.next?.start || new Date();
+        console.log('maxend is', maxEnd);
+        console.log('minend is', activity.start);
         let newEnd = new Date(activity.end);
         newEnd.setTime(selectedDate.getTime());
-        if (maxEnd && newEnd > maxEnd) {
+        if (newEnd < activity.start) {
+          console.log('new end below start. setting it to start');
+          newEnd = new Date(activity.start);
+          newEnd.setTime(newEnd.getTime() + 1);
+          console.log('new end is', newEnd);
+          setDate(newEnd);
+        } else if (maxEnd && newEnd > maxEnd) {
+          console.log('new end above max end. setting it to max end');
           newEnd = maxEnd;
+          console.log('new end is', newEnd);
+          setDate(newEnd);
         }
 
-        if (activity.end === newEnd) {
+        if (activity.end.getTime() === newEnd.getTime()) {
           console.log(`No changes for ${activity} returning`);
           return;
         }
@@ -198,6 +220,8 @@ function createConfirmHandler({
           setDate(activity.end);
         }
       }
+    } catch (error) {
+      console.error('Error updating activity:', error);
     } finally {
       setOpen(false);
     }
