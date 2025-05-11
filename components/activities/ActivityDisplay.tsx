@@ -137,7 +137,18 @@ function ActivityTime({
           <DialogHeader>
             <DialogTitle>{modalTitle}</DialogTitle>
           </DialogHeader>
-          <DatePicker date={date} mode='time' onDateChange={setDate} />
+          <DatePicker
+            date={date}
+            mode='time'
+            onDateChange={(newDate) => {
+              // NOTE: Takes care of majority of scenarios where you're past midnight and
+              // you're trying to set the time to before midnight
+              if (newDate > new Date()) {
+                newDate.setDate(newDate.getDate() - 1);
+              }
+              setDate(newDate);
+            }}
+          />
           <DialogFooter>
             <DialogClose asChild>
               <View className='flex flex-row justify-end'>
