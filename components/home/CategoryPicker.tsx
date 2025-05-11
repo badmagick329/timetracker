@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Category } from '@/lib/core/category';
@@ -23,26 +23,30 @@ export function CategoryPicker({
   onValueChange: (option: DisplayedCategory | undefined) => void;
   selectedCategory?: Category;
 }) {
-  let defaultCategory;
-  const match = displayedCategories.find(
-    (c) => c.value === selectedCategory?.id
-  );
-  if (match) {
-    defaultCategory = match;
-  } else {
-    defaultCategory = {
-      label: 'Select a category',
-      value: '',
-    };
-  }
-
   const [selectedDisplayedCategory, setSelectedDisplayedCategory] = useState<
     DisplayedCategory | undefined
-  >(defaultCategory);
+  >(undefined);
   const activityInProgress = useActivityStore(
     (state) => state.activityInProgress
   );
   const canStart = activityInProgress === undefined;
+
+  useEffect(() => {
+    let defaultCategory;
+    const match = displayedCategories.find(
+      (c) => c.value === selectedCategory?.id
+    );
+    if (match) {
+      defaultCategory = match;
+    } else {
+      defaultCategory = {
+        label: 'Select a category',
+        value: '',
+      };
+    }
+
+    setSelectedDisplayedCategory(defaultCategory);
+  }, [displayedCategories, selectedCategory]);
 
   const insets = useSafeAreaInsets();
   const contentInsets = {
