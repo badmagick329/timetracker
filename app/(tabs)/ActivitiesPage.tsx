@@ -1,4 +1,5 @@
-import { ScrollView, View } from 'react-native';
+import { memo, useMemo } from 'react';
+import { FlatList, View } from 'react-native';
 import { Activity } from '@/lib/core/activity';
 import { ActivityDisplay } from '@/components/activities/ActivityDisplay';
 import { Button } from '@/components/ui/button';
@@ -25,42 +26,81 @@ export default function ActivitiesPage() {
       </View>
     );
   }
-  const entries = Object.entries(activities);
-  entries.sort(([aKey], [bKey]) => bKey.localeCompare(aKey));
-  const sortedActivities = Object.fromEntries(entries);
+  const allEntries = Object.entries(activities);
+  allEntries.sort(([aKey], [bKey]) => bKey.localeCompare(aKey));
+
+  const entriesByDates = useMemo(
+    () =>
+      allEntries.map(([date, dateActivities]) => ({
+        date,
+        activities: dateActivities,
+      })),
+    [allEntries]
+  );
+
+  const renderDateEntries = useMemo(() => {
+    return ({ item }: { item: { date: string; activities: Activity[] } }) => (
+      <DateItemComponent date={item.date} activities={item.activities} />
+    );
+  }, []);
 
   return (
-    <ScrollView className='flex flex-col gap-8 px-2'>
-      {Object.keys(sortedActivities).map((logicalDate) => (
-        <View key={logicalDate} className='w-full gap-4 pt-4'>
-          <Text className='rounded-md bg-secondary py-2 text-center text-xl font-bold'>
-            {logicalDate}
-          </Text>
-          <ActivitiesDisplayAsDesc activities={activities[logicalDate]} />
-        </View>
-      ))}
-      {/* Reset button for testing */}
-      <View className='flex flex-row items-center justify-center'>
-        <Button variant={'destructive'} onPress={resetAll}>
-          <Text>RESET ALL</Text>
-        </Button>
-      </View>
-    </ScrollView>
+    <View className='flex-1'>
+      <FlatList
+        data={entriesByDates}
+        renderItem={renderDateEntries}
+        keyExtractor={(item) => item.date}
+        initialNumToRender={2}
+        maxToRenderPerBatch={2}
+        windowSize={5}
+        ListFooterComponent={
+          <View className='my-4 flex flex-row items-center justify-center py-4'>
+            <Button variant={'destructive'} onPress={resetAll}>
+              <Text>RESET ALL</Text>
+            </Button>
+          </View>
+        }
+      />
+    </View>
   );
 }
 
-function ActivitiesDisplayAsDesc({ activities }: { activities: Activity[] }) {
-  const sortedActivities = activities.sort((a, b) => {
-    if (a.start > b.start) return -1;
-    if (a.start < b.start) return 1;
-    return 0;
-  });
+const DateItemComponent = memo(
+  ({ date, activities }: { date: string; activities: Activity[] }) => (
+    <View className='w-full gap-4 pt-4'>
+      <Text className='rounded-md bg-secondary py-2 text-center text-xl font-bold'>
+        {date}
+      </Text>
+      <SortedActivityDisplay activities={activities} />
+    </View>
+  )
+);
 
-  return (
-    <>
-      {sortedActivities.map((a) => (
-        <ActivityDisplay key={a.id} activity={a} />
-      ))}
-    </>
-  );
-}
+const SortedActivityDisplay = memo(
+  ({ activities }: { activities: Activity[] }) => {
+    const sortedActivities = useMemo(() => {
+      return [...activities].sort((a, b) => {
+        if (a.start > b.start) return -1;
+        if (a.start < b.start) return 1;
+        return 0;
+      });
+    }, [activities]);
+
+    const renderEntries = useMemo(() => {
+      return ({ item }: { item: Activity }) => (
+        <ActivityDisplay key={item.id} activity={item} />
+      );
+    }, []);
+
+    return (
+      <FlatList
+        data={sortedActivities}
+        renderItem={renderEntries}
+        keyExtractor={(item) => item.id}
+        initialNumToRender={10}
+        maxToRenderPerBatch={10}
+        windowSize={20}
+      />
+    );
+  }
+);
