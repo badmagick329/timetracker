@@ -1,7 +1,7 @@
 import { memo, useMemo } from 'react';
 import { FlatList, View } from 'react-native';
 import { Activity } from '@/lib/core/activity';
-import { ActivityDisplay } from '@/components/activities/ActivityDisplay';
+import { ActivityRowInActivityPage } from '@/components/activities/ActivityRowInActivityPage';
 import { Button } from '@/components/ui/button';
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
@@ -88,7 +88,7 @@ const SortedActivityDisplay = memo(
 
     const renderEntries = useMemo(() => {
       return ({ item }: { item: Activity }) => (
-        <ActivityDisplay key={item.id} activity={item} />
+        <ActivityRowInActivityPage key={item.id} activity={item} />
       );
     }, []);
 

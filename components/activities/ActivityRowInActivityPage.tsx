@@ -18,7 +18,11 @@ import {
 import { Text } from '@/components/ui/text';
 import { useActivityStore } from '@/store/useActivityStore';
 
-export function ActivityDisplay({ activity }: { activity: Activity }) {
+export function ActivityRowInActivityPage({
+  activity,
+}: {
+  activity: Activity;
+}) {
   const [duration, setDuration] = useState(0);
   const removeActivity = useActivityStore((state) => state.removeActivity);
   const [ioInProgress, setIoInProgress] = useState(false);
@@ -137,18 +141,7 @@ function ActivityTime({
           <DialogHeader>
             <DialogTitle>{modalTitle}</DialogTitle>
           </DialogHeader>
-          <DatePicker
-            date={date}
-            mode='time'
-            onDateChange={(newDate) => {
-              // NOTE: Takes care of majority of scenarios where you're past midnight and
-              // you're trying to set the time to before midnight
-              if (newDate > new Date()) {
-                newDate.setDate(newDate.getDate() - 1);
-              }
-              setDate(newDate);
-            }}
-          />
+          <DatePicker date={date} mode='datetime' onDateChange={setDate} />
           <DialogFooter>
             <DialogClose asChild>
               <View className='flex flex-row justify-end'>
