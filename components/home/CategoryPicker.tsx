@@ -31,6 +31,14 @@ export function CategoryPicker({
   );
   const canStart = activityInProgress === undefined;
 
+  const insets = useSafeAreaInsets();
+  const contentInsets = {
+    top: insets.top,
+    bottom: insets.bottom,
+    left: 12,
+    right: 12,
+  };
+
   useEffect(() => {
     let defaultCategory;
     const match = displayedCategories.find(
@@ -47,14 +55,6 @@ export function CategoryPicker({
 
     setSelectedDisplayedCategory(defaultCategory);
   }, [displayedCategories, selectedCategory]);
-
-  const insets = useSafeAreaInsets();
-  const contentInsets = {
-    top: insets.top,
-    bottom: insets.bottom,
-    left: 12,
-    right: 12,
-  };
 
   if (displayedCategories.length === 0) {
     return <Text>No categories created</Text>;

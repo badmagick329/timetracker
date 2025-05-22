@@ -24,7 +24,6 @@ export function CurrentActivityControl() {
   const {
     canStart,
     canEnd,
-    canEndFromPreviousActivity,
     selectedCategory,
     setSelectedCategory,
     createActivity,

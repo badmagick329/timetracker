@@ -16,13 +16,17 @@ export function LogicalDatePicker() {
   );
   const saveChanges = useAppSettingsStore((state) => state.saveChanges);
 
+  useEffect(() => {
+    if (!logicalDateCutOff) {
+      return;
+    }
+
+    setDate(logicalDateCutOff.toDate());
+  }, [settingsIsInitialized]);
+
   if (!settingsIsInitialized || !logicalDateCutOff) {
     return <Text>Loading...</Text>;
   }
-
-  useEffect(() => {
-    setDate(logicalDateCutOff.toDate());
-  }, [settingsIsInitialized]);
 
   return (
     <>

@@ -10,22 +10,6 @@ export default function ActivitiesPage() {
   const activities = useActivityStore((state) => state.activitiesByDate);
   const isLoadingActivities = useActivityStore((state) => state.isLoading);
   const resetAll = useActivityStore((state) => state.resetAll);
-
-  if (isLoadingActivities) {
-    return (
-      <View className='flex flex-1 flex-col items-center justify-center'>
-        <Text>Loading activities...</Text>
-      </View>
-    );
-  }
-
-  if (!activities || Object.keys(activities).length === 0) {
-    return (
-      <View className='flex flex-1 flex-col items-center justify-center'>
-        <Text>No activities recorded yet.</Text>
-      </View>
-    );
-  }
   const allEntries = Object.entries(activities);
   allEntries.sort(([aKey], [bKey]) => bKey.localeCompare(aKey));
 
@@ -43,6 +27,22 @@ export default function ActivitiesPage() {
       <DateItemComponent date={item.date} activities={item.activities} />
     );
   }, []);
+
+  if (isLoadingActivities) {
+    return (
+      <View className='flex flex-1 flex-col items-center justify-center'>
+        <Text>Loading activities...</Text>
+      </View>
+    );
+  }
+
+  if (!activities || Object.keys(activities).length === 0) {
+    return (
+      <View className='flex flex-1 flex-col items-center justify-center'>
+        <Text>No activities recorded yet.</Text>
+      </View>
+    );
+  }
 
   return (
     <View className='flex-1'>
