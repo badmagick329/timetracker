@@ -26,7 +26,14 @@ type ActivityActions = {
     params: CreateActivityParams
   ) => Promise<Activity | undefined>;
   completeActivity: (endTime: Date) => Promise<string | undefined>;
-  updateActivity: (activity: Activity) => Promise<boolean | undefined>;
+  tryUpdateStart: (
+    activity: Activity,
+    selectedDate: Date
+  ) => Promise<Date | undefined>;
+  tryUpdateEnd: (
+    activity: Activity,
+    selectedDate: Date
+  ) => Promise<Date | undefined>;
   removeActivity: (activity: Activity) => Promise<string | undefined>;
   resetAll: () => Promise<void>;
 };
@@ -138,9 +145,15 @@ export const useActivityStore = create(
       return completedId;
     },
 
-    updateActivity: async (
-      activity: Activity
-    ): Promise<boolean | undefined> => {
+    tryUpdateStart: async (
+      activity: Activity,
+      selectedDate: Date
+    ): Promise<Date | undefined> => {
+      const newStart = activity.tryGetClosestValidStart(selectedDate);
+      if (!newStart) {
+        return;
+      }
+
       const { activityManager: manager } = get();
       if (!manager) {
         console.log(
@@ -150,7 +163,9 @@ export const useActivityStore = create(
       }
 
       try {
-        const isUpdated = await manager.updateActivity(activity);
+        const isUpdated = await manager.updateActivity(
+          activity.cloneWith({ start: newStart })
+        );
         if (isUpdated) {
           set({
             activities: [...manager.getActivities()],
@@ -159,7 +174,43 @@ export const useActivityStore = create(
             activitiesByDate: manager.groupByLogicalDate(),
           });
         }
-        return isUpdated;
+        return newStart;
+      } catch (error) {
+        console.log('Failed to update activity:', error);
+        return undefined;
+      }
+    },
+
+    tryUpdateEnd: async (
+      activity: Activity,
+      selectedDate: Date
+    ): Promise<Date | undefined> => {
+      const newEnd = activity.tryGetClosestValidEnd(selectedDate);
+      if (!newEnd) {
+        return;
+      }
+
+      const { activityManager: manager } = get();
+      if (!manager) {
+        console.log(
+          'Cannot update activity: Activity Manager not initialized.'
+        );
+        return undefined;
+      }
+
+      try {
+        const isUpdated = await manager.updateActivity(
+          activity.cloneWith({ end: newEnd })
+        );
+        if (isUpdated) {
+          set({
+            activities: [...manager.getActivities()],
+            activityInProgress: manager.activityInProgress,
+            lastCompletedActivity: manager.getLastCompletedActivity(),
+            activitiesByDate: manager.groupByLogicalDate(),
+          });
+        }
+        return newEnd;
       } catch (error) {
         console.log('Failed to update activity:', error);
         return undefined;

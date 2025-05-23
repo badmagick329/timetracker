@@ -75,6 +75,52 @@ export class Activity {
     });
   }
 
+  tryGetClosestValidStart(targetDate: Date) {
+    let minStart = this?.previous?.end;
+
+    let maxStart;
+    if (this.end) {
+      maxStart = this.end;
+    } else if (this.next?.start) {
+      maxStart = this.next.start;
+    }
+
+    let newStart = new Date(this.start);
+    newStart.setTime(targetDate.getTime());
+    if (minStart && newStart < minStart) {
+      newStart = minStart;
+    } else if (maxStart && newStart > maxStart) {
+      newStart = new Date(maxStart);
+      newStart.setTime(newStart.getTime() - 1);
+    }
+
+    if (this.start.getTime() === newStart.getTime()) {
+      return;
+    }
+    return newStart;
+  }
+
+  tryGetClosestValidEnd(targetDate: Date) {
+    if (!this.end) {
+      return;
+    }
+
+    let maxEnd = this.next?.start || new Date();
+    let newEnd = new Date(this.end);
+    newEnd.setTime(targetDate.getTime());
+    if (newEnd < this.start) {
+      newEnd = new Date(this.start);
+      newEnd.setTime(newEnd.getTime() + 1);
+    } else if (maxEnd && newEnd > maxEnd) {
+      newEnd = maxEnd;
+    }
+
+    if (this.end.getTime() === newEnd.getTime()) {
+      return;
+    }
+    return newEnd;
+  }
+
   toString(): string {
     return `${this.timespan.start}__${this.timespan.end}__${this.category}__${this.summary}`;
   }

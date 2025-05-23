@@ -98,10 +98,12 @@ function ActivityTime({
   const [open, setOpen] = useState(false);
   const [ioInProgress, setIoInProgress] = useState(false);
 
-  const updateActivity = useActivityStore((state) => state.updateActivity);
+  const tryUpdateStart = useActivityStore((state) => state.tryUpdateStart);
+  const tryUpdateEnd = useActivityStore((state) => state.tryUpdateEnd);
   const handleConfirm = createConfirmHandler({
     activity,
-    updateActivity,
+    tryUpdateStart,
+    tryUpdateEnd,
     setDate,
     setOpen,
     source: timeType,
@@ -172,13 +174,21 @@ function ActivityTime({
 
 function createConfirmHandler({
   activity,
-  updateActivity,
+  tryUpdateStart,
+  tryUpdateEnd,
   setDate,
   setOpen,
   source,
 }: {
   activity: Activity;
-  updateActivity: (activity: Activity) => Promise<boolean | undefined>;
+  tryUpdateStart: (
+    activity: Activity,
+    selectedDate: Date
+  ) => Promise<Date | undefined>;
+  tryUpdateEnd: (
+    activity: Activity,
+    selectedDate: Date
+  ) => Promise<Date | undefined>;
   setDate: (date: Date) => void;
   setOpen: (open: boolean) => void;
   source: 'start' | 'end';
@@ -186,75 +196,28 @@ function createConfirmHandler({
   return async (selectedDate: Date) => {
     try {
       if (source === 'start') {
-        let minStart = activity?.previous?.end;
-        let maxStart = undefined;
-        if (activity.end) {
-          maxStart = activity.end;
-        } else if (activity.next?.start) {
-          maxStart = activity.next.start;
-        }
-
-        let newStart = new Date(activity.start);
-        newStart.setTime(selectedDate.getTime());
-
-        if (minStart && newStart < minStart) {
-          newStart = minStart;
-          setDate(newStart);
-        } else if (maxStart && newStart > maxStart) {
-          newStart = maxStart;
-          setDate(newStart);
+        const updatedStart = await tryUpdateStart(activity, selectedDate);
+        if (updatedStart) {
+          setDate(updatedStart);
         } else {
-          setDate(selectedDate);
-        }
-
-        if (activity.start.getTime() === newStart.getTime()) {
-          console.log(`No changes for ${activity} returning`);
-          return;
-        }
-
-        const success = await updateActivity(
-          activity.cloneWith({ start: newStart })
-        );
-        if (!success) {
           setDate(activity.start);
         }
-      } else {
+        return;
+      }
+      if (source === 'end') {
         if (!activity.end) {
-          console.log(`No end found for ${activity} returning`);
           return;
         }
-
-        setDate(selectedDate);
-        let maxEnd = activity?.next?.start || new Date();
-        let newEnd = new Date(activity.end);
-        newEnd.setTime(selectedDate.getTime());
-        if (newEnd < activity.start) {
-          newEnd = new Date(activity.start);
-          newEnd.setTime(newEnd.getTime() + 1);
-          setDate(newEnd);
-        } else if (maxEnd && newEnd > maxEnd) {
-          newEnd = maxEnd;
-          setDate(newEnd);
-        }
-
-        if (activity.end.getTime() === newEnd.getTime()) {
-          console.log(`No changes for ${activity} returning`);
-          return;
-        }
-
-        const success = await updateActivity(
-          activity.cloneWith({ end: newEnd })
-        );
-        if (success) {
-          console.log(`Updated ${activity} to ${newEnd}`);
+        const updatedEnd = await tryUpdateEnd(activity, selectedDate);
+        if (updatedEnd) {
+          setDate(updatedEnd);
         } else {
-          console.log(`Failed to update ${activity} to ${newEnd}`);
-        }
-
-        if (!success && activity.end) {
           setDate(activity.end);
         }
+        return;
       }
+
+      throw new Error('Invalid source type');
     } catch (error) {
       console.error('Error updating activity:', error);
     } finally {
